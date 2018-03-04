@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sketch2HTML</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+
+<style>
+    canvas {
+        cursor:url(images/cursor-fa-pencil.cur),auto;
+    }
+</style>
+</head>
+
+<body>
+    <h1>Sketch2HTML</h1>
+    <ul>
+        <li>Clear the canvas: <button onclick="drawingApp.clearDrawing()">Clear</button></li>
+        <li class="color-buttons">Choose a color:           
+            <button>Purple</button>
+            <button>Green</button>
+            <button>Yellow</button>
+            <button>Brown</button>
+        </li>
+        <li class="size-buttons">Choose a size: 
+            <button>Small</button>
+            <button>Normal</button>
+            <button>Large</button>
+            <button>Huge</button>
+        </li>
+        <li class="tool-buttons">Choose a tool: 
+            <button>Crayon</button>
+            <button>Eraser</button>
+        </li>
+        <li>
+            <button id='sendtoserver'>SendToServer</button>
+        </li>
+    </ul>
+
+    <div>
+        <canvas id="canvasDiv" style="border-style:dashed" width=800, height=600></canvas>
+        <iframe id="out_frame" src="" style="border-style:dashed" width=800, height=600></iframe>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="js/html5-canvas-drawing-app.js"></script>
+    <script>
+        //drawingApp.init('canvasDiv', "https://raw.githubusercontent.com/iSysLab/iSysLab.github.io/master/isyslab.jpg");
+        drawingApp.init('canvasDiv', null);
+        $('.color-buttons button').click(function() {drawingApp.changeColor($(this).text());});
+        $('.size-buttons button').click(function() {drawingApp.changeSize($(this).text());});
+        $('.tool-buttons button').click(function() {drawingApp.changeTool($(this).text());});
+
+        $('#sendtoserver').click(function() {
+            canvas = document.getElementById('canvasDiv');
+            var dataURL = canvas.toDataURL('image/jpeg');
+            $.ajax({
+                type: "POST",
+                url: "/send_img",
+                data: { 
+                  imgBase64: dataURL
+                }
+            }).done(function(o) {
+                // reload output iframe
+                var ts = new Date().getTime();
+                $("#out_frame").attr("src", "out?timestamp=" + ts);
+            });
+        });
+    </script>
+</body>
+</html>
