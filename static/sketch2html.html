@@ -3,7 +3,12 @@
 <head>
     <title>Sketch2HTML</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="js/basic.js"></script>
+    <script src="js/html5-canvas-drawing-app.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style>
     canvas {
         cursor:url(images/cursor-fa-pencil.cur),auto;
@@ -12,59 +17,50 @@
 </head>
 
 <body>
-    <h1>Sketch2HTML</h1>
-    <ul>
-        <li>Clear the canvas: <button onclick="drawingApp.clearDrawing()">Clear</button></li>
-        <li class="color-buttons">Choose a color:           
-            <button>Purple</button>
-            <button>Green</button>
-            <button>Yellow</button>
-            <button>Brown</button>
-        </li>
-        <li class="size-buttons">Choose a size: 
-            <button>Small</button>
-            <button>Normal</button>
-            <button>Large</button>
-            <button>Huge</button>
-        </li>
-        <li class="tool-buttons">Choose a tool: 
-            <button>Crayon</button>
-            <button>Eraser</button>
-        </li>
-        <li>
-            <button id='sendtoserver'>SendToServer</button>
-        </li>
-    </ul>
-
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header" style="cursor:pointer;">
+          <a class="navbar-brand" onclick = "ToSketch2HTML()">Sketch2HTML</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tool <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li class="tool-buttons"><a href="#">Crayon</a></li>
+              <li class="tool-buttons"><a href="#">Eraser</a></li>
+            </ul>
+          </li>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Size <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li class="size-buttons"><a href="#">Small<div style="width:100%; height:2px; background-color:Black;"></div></a></li>
+              <li class="size-buttons"><a href="#">Normal<div style="width:100%; height:5px; background-color:Black;"></div></a></li>
+              <li class="size-buttons"><a href="#">Large<div style="width:100%; height:10px; background-color:Black;"></div></a></li>
+              <li class="size-buttons"><a href="#">Huge<div style="width:100%; height:20px; background-color:Black;"></div></a></li>
+            </ul>
+          </li>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Color <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li class="color-buttons"><a href="#">Red<div style="width:100%; height:5px; background-color:Red;"></div></a></li>
+              <li class="color-buttons"><a href="#">Yellow<div style="width:100%; height:5px; background-color:Yellow;"></div></a></li>
+              <li class="color-buttons"><a href="#">Purple<div style="width:100%; height:5px; background-color:Purple;"></div></a></li>
+              <li class="color-buttons"><a href="#">Green<div style="width:100%; height:5px; background-color:Green;"></div></a></li>
+              <li class="color-buttons"><a href="#">Brown<div style="width:100%; height:5px; background-color:Brown;"></div></a></li>
+              <li class="color-buttons"><a href="#">Black<div style="width:100%; height:5px; background-color:black;"></div></a></li>
+            </ul>
+          </li>
+          <li><a href="#" id='sendtoserver'>SendToServer</a>
+          </li>
+          <button class="btn btn-danger navbar-btn" onclick="drawingApp.clearDrawing()">Clear</button>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <div>
+        <br><br><br><br>
+        <h2><mark>CANVAS</mark></h2>
         <canvas id="canvasDiv" style="border-style:dashed" width=800, height=600></canvas>
-        <iframe id="out_frame" src="" style="border-style:dashed" width=800, height=600></iframe>
+        <br><br>
+        <h2><mark>OUTPUT</mark></h2>
+        <iframe id="out_frame" src="" style="border-style:dashed position:fixed" width=805, height=600></iframe>
     </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="js/html5-canvas-drawing-app.js"></script>
-    <script>
-        //drawingApp.init('canvasDiv', "https://raw.githubusercontent.com/iSysLab/iSysLab.github.io/master/isyslab.jpg");
-        drawingApp.init('canvasDiv', null);
-        $('.color-buttons button').click(function() {drawingApp.changeColor($(this).text());});
-        $('.size-buttons button').click(function() {drawingApp.changeSize($(this).text());});
-        $('.tool-buttons button').click(function() {drawingApp.changeTool($(this).text());});
-
-        $('#sendtoserver').click(function() {
-            canvas = document.getElementById('canvasDiv');
-            var dataURL = canvas.toDataURL('image/jpeg');
-            $.ajax({
-                type: "POST",
-                url: "/send_img",
-                data: { 
-                  imgBase64: dataURL
-                }
-            }).done(function(o) {
-                // reload output iframe
-                var ts = new Date().getTime();
-                $("#out_frame").attr("src", "out?timestamp=" + ts);
-            });
-        });
-    </script>
 </body>
 </html>

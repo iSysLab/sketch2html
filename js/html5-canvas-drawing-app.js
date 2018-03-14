@@ -21,10 +21,12 @@ var drawingApp = (function () {
 
 	var canvas,
 		context,
+		colorRed = "#ff0000",
 		colorPurple = "#cb3594",
 		colorGreen = "#659b41",
 		colorYellow = "#ffcf33",
 		colorBrown = "#986928",
+		colorBlack = "#000000",
 		outlineImage = new Image(),
 		clickX = [],
 		clickY = [],
@@ -33,7 +35,7 @@ var drawingApp = (function () {
 		clickSize = [],
 		clickDrag = [],
 		paint = false,
-		curColor = colorPurple,
+		curColor = colorBlack,
 		curTool = "crayon",
 		curSize = "normal",
 		totalLoadResources = 1,
@@ -93,7 +95,7 @@ var drawingApp = (function () {
 					context.moveTo(clickX[i] - 1, clickY[i]);
 				}
 				context.lineTo(clickX[i], clickY[i]);
-				
+
 				// Set the drawing color
 				if (clickTool[i] === "eraser") {
 					context.strokeStyle = 'white';
@@ -110,7 +112,7 @@ var drawingApp = (function () {
 
 			//context.globalAlpha = 1;
 			// Draw the outline image
-			
+
 		},
 
 		// Adds a point to the drawing array.
@@ -138,10 +140,10 @@ var drawingApp = (function () {
 				redraw();
 			},
 
-			drag = function (e) {				
+			drag = function (e) {
 				var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
 					mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop;
-				
+
 				if (paint) {
 					addClick(mouseX, mouseY, true);
 					redraw();
@@ -182,12 +184,12 @@ var drawingApp = (function () {
 		},
 
 		// Creates a canvas element, loads images, adds events, and draws the canvas for the first time.
-		init = function (canvas_id, background_url) {		
+		init = function (canvas_id, background_url) {
 			canvas = document.getElementById(canvas_id);
 			context = canvas.getContext("2d"); // Grab the 2d canvas context
 
 			if (background_url) {
-				// Load images			
+				// Load images
 				outlineImage.onload = resourceLoaded;
 				outlineImage.src = background_url;
 			} else {
@@ -209,15 +211,17 @@ var drawingApp = (function () {
 			color = color.toLowerCase();
 			curTool = "crayon";
 			switch (color) {
+				case "red" : curColor = colorRed; break;
 				case "purple": curColor = colorPurple; break;
 				case "green": curColor = colorGreen; break;
 				case "yellow": curColor = colorYellow; break;
 				case "brown": curColor = colorBrown; break;
+				case "black": curColor = colorblack; break;
 				default:
 					curColor = color;
 			}
 		},
-		
+
 		clearDrawing = function() {
 			clickX.length = 0;
 			clickY.length = 0;

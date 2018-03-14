@@ -34,7 +34,7 @@ def send_img():
     img.save('images/test.jpg')
     # sketch to out.html
 
-    return 'OK'
+    return 'OK' 
 	
 
 if __name__=='__main__':
