@@ -3,7 +3,7 @@ function ToSketch2HTML(){
   location.href = url;
 };
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function(){
     drawingApp.init('canvasDiv', null);
     $('.color-buttons a').click(function() {drawingApp.changeColor($(this).text());});
     $('.size-buttons a').click(function() {drawingApp.changeSize($(this).text());});

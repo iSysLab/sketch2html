@@ -18,7 +18,6 @@
 var drawingApp = (function () {
 
 	"use strict";
-
 	var canvas,
 		context,
 		colorRed = "#ff0000",
@@ -44,6 +43,9 @@ var drawingApp = (function () {
 		// Clears the canvas.
 		clearCanvas = function () {
 			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = "white";
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.fill();
 		},
 
 		// Redraws the canvas.
@@ -55,15 +57,12 @@ var drawingApp = (function () {
 			}
 
 			clearCanvas();
-
 			context.drawImage(outlineImage, 0, 0, canvas.width, canvas.height);
-
 			// Keep the drawing in the drawing area
-			context.save();
 			context.beginPath();
+			context.save();
 			context.rect(0, 0, canvas.width, canvas.height);
 			context.clip();
-
 			// For each point drawn
 			for (i = 0; i < clickX.length; i += 1) {
 
@@ -121,7 +120,7 @@ var drawingApp = (function () {
 		// @param dragging
 		addClick = function (x, y, dragging) {
 			clickX.push(x);
-			clickY.push(y);
+			clickY.push(y-100);
 			clickTool.push(curTool);
 			clickColor.push(curColor);
 			clickSize.push(curSize);
@@ -203,13 +202,13 @@ var drawingApp = (function () {
 
 		changeTool = function(tool) {
 			tool = tool.toLowerCase();
-			if (tool == "crayon" || tool == "eraser")
+			if (tool == "crayon" || tool == "eraser" || tool == "line")
 				curTool = tool
 		},
 
 		changeColor = function(color) {
 			color = color.toLowerCase();
-			curTool = "crayon";
+			// curTool = "crayon";
 			switch (color) {
 				case "red" : curColor = colorRed; break;
 				case "purple": curColor = colorPurple; break;

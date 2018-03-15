@@ -3,19 +3,14 @@
 <head>
     <title>Sketch2HTML</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <link rel="stylesheet" type="text/css" href="css/basic.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script src="js/basic.js"></script>
     <script src="js/html5-canvas-drawing-app.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<style>
-    canvas {
-        cursor:url(images/cursor-fa-pencil.cur),auto;
-    }
-</style>
 </head>
-
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
@@ -26,6 +21,7 @@
           <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tool <span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="tool-buttons"><a href="#">Crayon</a></li>
+              <li class="tool-buttons"><a href="#">Line</a></li>
               <li class="tool-buttons"><a href="#">Eraser</a></li>
             </ul>
           </li>
@@ -47,20 +43,22 @@
               <li class="color-buttons"><a href="#">Black<div style="width:100%; height:5px; background-color:black;"></div></a></li>
             </ul>
           </li>
-          <li><a href="#" id='sendtoserver'>SendToServer</a>
+          <li>
+            <a href="#" id='sendtoserver'>SendToServer</a>
           </li>
           <button class="btn btn-danger navbar-btn" onclick="drawingApp.clearDrawing()">Clear</button>
-          </li>
         </ul>
       </div>
     </nav>
-    <div>
-        <br><br><br><br>
-        <h2><mark>CANVAS</mark></h2>
-        <canvas id="canvasDiv" style="border-style:dashed" width=800, height=600></canvas>
-        <br><br>
-        <h2><mark>OUTPUT</mark></h2>
-        <iframe id="out_frame" src="" style="border-style:dashed position:fixed" width=805, height=600></iframe>
-    </div>
+      <div id = "body">
+        <div class="col-sm-6">
+          <h2><mark>CANVAS</mark></h2>
+          <canvas id="canvasDiv" style="border-style:dashed" width=800, height=600></canvas>
+        </div>
+        <div class="col-sm-6">
+          <h2><mark>OUTPUT</mark></h2>
+          <iframe id="out_frame" src="" style="border-style:dashed position:fixed" width=800, height=600></iframe>
+        </div>
+      </div>
 </body>
 </html>
