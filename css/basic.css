@@ -1,5 +1,5 @@
-canvas{
-    cursor:url(images/cursor-fa-pencil.cur),auto;
+#canvasDiv{
+    cursor:url(../images/cursor-fa-pencil.cur),auto;
 }
 
 #body{
