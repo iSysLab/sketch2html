@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Simple Graphic Editor </title>
+    <style type="text/css">
+      .controls {width:100px; height:30px; margin-top:5px; border: 1px dashed blue;}
+      .colors {width:20px; height:20px}
+
+    </style>
+  </head>
+  <body style="width:900px; height:650px; border:1px solid; padding:10px;">
+    <h1 style="margin-left:280px">2D Simple Graphic Editor </h1>
+
+    <div style = "float: left;">
+      <input type="button" value="선분" class="controls", onclick="changeMode(1)" /><br/>
+      <input type="button" value="원" class="controls" onclick="changeMode(2)"/><br/>
+      <input type="button" value="사각형" class="controls" onclick="changeMode(3)"/><br/>
+      <input type="button" value="다각형" class="controls" onclick="changeMode(4)"/><br/>
+      <input type="button" value="곡선" class="controls" onclick="changeMode(5)"/><br/>
+      <input type="button" value="색채우기" class="controls" onclick="changeMode(6)"/><br/>
+      <input type="button" id="current_fill_color" value="  " class="colors" style="background-color:white; margin-left:40px;"/><br/>
+      <input type="button" value="  " class="colors" style="border: 1px solid; background-color:white" onclick="changeFillColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:black" onclick="changeFillColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:gray" onclick="changeFillColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:red" onclick="changeFillColor(this)"/><br/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:yellow" onclick="changeFillColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:blue" onclick="changeFillColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:green" onclick="changeFillColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:orange" onclick="changeFillColor(this)"/>
+      <input type="file" id="pattern_file" value="패턴" style="display:none;" onchange="loadImage(this)"/><br/>
+      <button type="button" id="pattern_button" class="controls" onclick="pattern_clicked(event)">패턴</button><br/>
+      선색
+      <input type="button" id="current_line_color" value="  " class="colors" style="background-color:black;"/><br/>
+      <input type="button" value="  " class="colors" style="border: 1px solid; background-color:white" onclick="changeLineColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:black" onclick="changeLineColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:gray" onclick="changeLineColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:red" onclick="changeLineColor(this)"/><br/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:yellow" onclick="changeLineColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:blue" onclick="changeLineColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:orange" onclick="changeLineColor(this)"/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:green" onclick="changeLineColor(this)"/><br/><br/>선굵기
+<br/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:black; width:100px; height:1px;" onclick="changeLineWidth(1)"/><br/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:black; width:100px; height:3px;" onclick="changeLineWidth(3)"/><br/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:black; width:100px; height:5px;" onclick="changeLineWidth(5)"/><br/>
+      <input type="button" value="  " class="colors" style="border: none; background-color:black; width:100px; height:7px;" onclick="changeLineWidth(7)"/><br/>
+
+    </div>
+    <canvas id="myCanvas" width="700" height="500" style='border:1px solid; margin-left:20px;' onmousedown='checkMode(event)' onmouseup='completeDrawing(event)'></canvas><br/>
+    <button type="button" style="width:100px; margin-left:270px;" class="controls" onclick="saveCanvas()">저장 </button>
+    <input type="file" id="canvas_file" value="캔버스" style="display:none;" onchange="loadCanvas(this)"/>
+    <button type="button" style="margin-left:10px" class="controls" onclick="loadCanvasClicked(event)">불러오기</button>
+  </body>
+  <script>
+    var modes = ["none", "line", "circle", "rect", "poly", "curve", "fill", "pattern"];
+    var line_color = "black";
+    var line_width = 1;
+    var rect_color = "white";  var img = new Image();
+    var figX = 0;
+    var figY = 0;
+    var current_mode = modes[0];
+    var poly_first = true; var pattern_first = true;
+    var fill_flag = false; pattern_flag = false;
+    var curve_count = 0; var cp1_x=0; var cp1_y=0; var cp2_x=0; var cp2_y=0;
+    var canvas = document.getElementById("myCanvas");
+    var fill_color_btn = document.getElementById("current_fill_color");
+    var line_color_btn = document.getElementById("current_line_color");
+    var cv = canvas.getContext("2d");
+
+    function saveCanvas()
+    {
+      var link = document.createElement('a');
+      link.download = "canvas.png";
+      link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");;
+      link.click();
+    }
+    function loadCanvasClicked(event)
+    {
+      event.preventDefault();
+      document.getElementById("canvas_file").click();
+    }
+    function loadCanvas(file_btn)
+    {
+      var file = file_btn.files[0];
+      var imageObj = new Image();
+      imageObj.src = window.URL.createObjectURL(file);
+      imageObj.onload = function(){
+        cv.drawImage(imageObj, 0, 0);
+      }
+    }
+    function changeLineWidth(width)
+    {
+      line_width=width;
+    }
+
+    function changeMode(btn)
+    {
+      current_mode = modes[btn];
+      if(btn==6)
+      {
+        fill_flag = true;
+        pattern_flag=false;
+        current_mode = modes[3];
+      }
+    }
+
+    function changeFillColor(btn)
+    {
+      rect_color = btn.style.backgroundColor;
+      fill_color_btn.style.backgroundColor = rect_color;
+    }
+    function changeLineColor(btn)
+    {
+      line_color = btn.style.backgroundColor;
+      line_color_btn.style.backgroundColor = line_color;
+    }
+
+    function pattern_clicked(event)
+    {
+      event.preventDefault();
+      document.getElementById("pattern_file").click();
+    }
+    function loadImage(file_btn)
+    {
+      var file = file_btn.files[0];
+      img = new Image();
+      img.src = window.URL.createObjectURL(file);
+
+      fill_flag = false;
+      pattern_flag=true;
+      current_mode = modes[3];
+    }
+
+
+    function checkMode(event)
+    {
+      var x = event.x - canvas.offsetLeft;
+      var y = event.y - canvas.offsetTop;
+      switch (current_mode)
+      {
+        case modes[0]: //"none"
+            break;
+        case modes[1]: //"line"
+            cv.beginPath();
+            cv.moveTo(x,y);
+            break;
+        case modes[2]: //"circle"
+            cv.beginPath();
+            figX = x;
+            figY = y;
+            break;
+        case modes[3]: //"rect"
+            cv.beginPath();
+            figX = x;
+            figY = y;
+            break;
+        case modes[4]: //"poly"
+            if(poly_first==true)
+            {
+              cv.beginPath();
+              cv.moveTo(x,y);
+              figX=x;
+              figY=y;
+              poly_first=false;
+            }
+            if(event.which==3)
+            {
+              cv.lineTo(figX,figY);
+              cv.lineWidth=line_width;
+              cv.strokeStyle = line_color;
+              cv.stroke();
+              cv.closePath();
+            }
+        case modes[5]: //"curve"
+            break;
+
+        default:
+            alert('mode 오류가 발생했습니다.');
+            break;
+      }
+
+
+    }
+    function completeDrawing(event)
+    {
+      var x = event.x - canvas.offsetLeft;
+      var y = event.y - canvas.offsetTop;
+
+      switch (current_mode) {
+        case modes[0]: //"none"
+            break;
+        case modes[1]: //"line"
+            cv.lineTo(x,y);
+            cv.lineWidth=line_width;
+            cv.strokeStyle = line_color;
+            cv.stroke();
+            cv.closePath();
+            break;
+        case modes[2]:  //"circle"
+            var radius = Math.sqrt(Math.pow(figX-x,2)+Math.pow(figY-y,2))/2;
+            cv.arc((figX+x)/2, (figY+y)/2, radius, 0, 2 * Math.PI);
+            cv.lineWidth=line_width;
+            cv.strokeStyle = line_color;
+            cv.stroke();
+            cv.closePath();
+            break;
+        case modes[3]: //"rect"
+            if(figX==0 && figY==0)
+            {
+              break;
+            }
+            cv.rect(figX,figY,x-figX,y-figY);
+            if(fill_flag)
+            {
+              cv.fillStyle = rect_color;
+              cv.fill();
+            }
+            if(pattern_flag)
+            {
+              var pattern = cv.createPattern(img, 'repeat');
+              cv.fillStyle = pattern;
+              cv.fill();
+            }
+            cv.lineWidth = line_width;
+            cv.strokeStyle = line_color;
+            cv.stroke();
+            cv.closePath();
+            break;
+        case modes[4]: //"poly"
+            if(event.which==3)
+            {
+              poly_first = true;
+              break;
+            }
+            cv.lineTo(x,y);
+            cv.lineWidth = line_width;
+            cv.strokeStyle = line_color;
+            cv.stroke();
+            cv.moveTo(x,y);
+            break;
+        case modes[5]: //"curve"
+            switch (curve_count)
+            {
+              case 0:
+                  cv.beginPath();
+                  cv.moveTo(x,y);
+                  curve_count += 1;
+                  break;
+              case 1:
+                  cp1_x=x;
+                  cp1_y=y;
+                  curve_count += 1;
+                  break;
+              case 2:
+                  cp2_x=x;
+                  cp2_y=y;
+                  curve_count += 1;
+                  break;
+              case 3:
+                  cv.bezierCurveTo(cp1_x,cp1_y,cp2_x,cp2_y,x,y);
+                  cv.lineWidth = line_width;
+                  cv.strokeStyle = line_color;
+                  cv.stroke();
+                  cv.closePath();
+                  curve_count = 0;
+                  break;
+              default:
+                  alert("curve_count error!");
+                  break;
+            }
+            break;
+        default:
+            alert('mode 오류가 발생했습니다.');
+            break;
+      }
+    }
+  </script>
+
+</html>

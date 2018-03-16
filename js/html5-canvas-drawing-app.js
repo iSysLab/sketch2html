@@ -17,18 +17,24 @@
 
 var drawingApp = (function () {
 
-	"use strict";
-	var canvas,
+		"use strict";
+		var canvas,
 		context,
+		outlineImage = new Image(),
+		//color info
 		colorRed = "#ff0000",
 		colorPurple = "#cb3594",
 		colorGreen = "#659b41",
 		colorYellow = "#ffcf33",
 		colorBrown = "#986928",
 		colorBlack = "#000000",
-		outlineImage = new Image(),
-		clickX = [],
-		clickY = [],
+
+		startclickX = [],
+		startclickY = [],
+		endclickX = [],
+		endclickY = [],
+
+		//etc info
 		clickColor = [],
 		clickTool = [],
 		clickSize = [],
@@ -64,7 +70,7 @@ var drawingApp = (function () {
 			context.rect(0, 0, canvas.width, canvas.height);
 			context.clip();
 			// For each point drawn
-			for (i = 0; i < clickX.length; i += 1) {
+			for (i = 0; i < startclickX.length; i += 1) {
 
 				// Set the drawing radius
 				switch (clickSize[i]) {
@@ -88,12 +94,12 @@ var drawingApp = (function () {
 				context.beginPath();
 				// If dragging then draw a line between the two points
 				if (clickDrag[i] && i) {
-					context.moveTo(clickX[i - 1], clickY[i - 1]);
+					context.moveTo(startclickX[i - 1], startclickY[i - 1]);
 				} else {
 					// The x position is moved over one pixel so a circle even if not dragging
-					context.moveTo(clickX[i] - 1, clickY[i]);
+					context.moveTo(startclickX[i] - 1, startclickY[i]);
 				}
-				context.lineTo(clickX[i], clickY[i]);
+				context.lineTo(startclickX[i], startclickY[i]);
 
 				// Set the drawing color
 				if (clickTool[i] === "eraser") {
@@ -119,8 +125,17 @@ var drawingApp = (function () {
 		// @param y
 		// @param dragging
 		addClick = function (x, y, dragging) {
-			clickX.push(x);
-			clickY.push(y-100);
+			startclickX.push(x);
+			startclickY.push(y-100);
+			clickTool.push(curTool);
+			clickColor.push(curColor);
+			clickSize.push(curSize);
+			clickDrag.push(dragging);
+		},
+
+		addRelease = function (x, y, dragging) {
+			endclickX.push(x);
+			endclickY.push(y-100);
 			clickTool.push(curTool);
 			clickColor.push(curColor);
 			clickSize.push(curSize);
@@ -152,8 +167,16 @@ var drawingApp = (function () {
 			},
 
 			release = function () {
-				paint = false;
-				redraw();
+				if (curTool === "line"){
+					paint = true;
+					var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
+						mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop;
+					redraw();
+					paint = false;
+				}else{
+					paint = false;
+					redraw();
+				}
 			},
 
 			cancel = function () {
@@ -222,8 +245,8 @@ var drawingApp = (function () {
 		},
 
 		clearDrawing = function() {
-			clickX.length = 0;
-			clickY.length = 0;
+			startclickX.length = 0;
+			startclickY.length = 0;
 			clickTool.length = 0;
 			clickColor.length = 0;
 			clickSize.length = 0;
