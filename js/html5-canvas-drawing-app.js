@@ -1,8 +1,3 @@
-var pos = {
-	drawable: false,
-	x: -1,
-	y: -1,
-};
 
 function ToSketch2HTML(){
   var url = document.location.href;
@@ -14,25 +9,24 @@ function listener(e){
 		case "mousedown":
 			drawingApp.initDraw(e);
 			break;
-
 		case "mousemove":
 			if(drawingApp.pos.drawable)
 				drawingApp.draw(e);
 			break;
-
 		case "mouseout":
 		case "mouseup":
 			drawingApp.finishDraw();
 			break;
 	}
 };
-
 var drawingApp = new function (){
+
 	this.pos = {
 		drawable: false,
 		x: -1,
 		y: -1,
 	};
+
 	this.canvas;
 	this.context;
 	this.curTool = "crayon";
@@ -59,19 +53,27 @@ var drawingApp = new function (){
 	}
 
 	this.initDraw = function(e){
-		this.context.strokeStyle = this.curColor;
 		this.context.lineCap = "round";
 		this.context.lineJoin = "round";
 		this.context.lineWidth = this.curRadius;
+		this.context.strokeStyle = this.curColor;
 		this.context.beginPath();
 		this.pos.drawable = true;
-		if (curTool == "line"){
-			alert("line");
-		}else{
+		if (this.curTool == "crayon"){
 			var coors = this.getPosition(e);
 			this.pos.X = coors.X;
 			this.pos.Y = coors.Y;
 			this.context.moveTo(this.pos.X, this.pos.Y);
+		}else if(this.curTool == "line"){
+			alert("line")
+		}else if(this.curTool == "eraser"){
+			this.context.strokeStyle = this.colorWhite;
+			var coors = this.getPosition(e);
+			this.pos.X = coors.X;
+			this.pos.Y = coors.Y;
+			this.context.moveTo(this.pos.X, this.pos.Y);
+		}else{
+
 		}
 	};
 
@@ -97,6 +99,8 @@ var drawingApp = new function (){
 
 	this.changeColor = function(color){
 		var Color = color.toLowerCase();
+		if (this.curTool == "eraser")
+			return;
 		switch (color) {
 			case "red" : this.curColor = this.colorRed; break;
 			case "purple": this.curColor = this.colorPurple; break;
@@ -129,10 +133,6 @@ var drawingApp = new function (){
 		var Tool = tool.toLowerCase();
 			if (Tool == "crayon" || Tool == "eraser" || Tool == "line")
 				this.curTool = Tool;
-				if(this.curTool === "eraser"){
-					this.curColor = this.colorWhite;
-				}
-
 	};
 
 	this.clearDrawing = function() {
@@ -154,7 +154,6 @@ document.addEventListener("DOMContentLoaded", function(){
   $('.size-buttons a').click(function() {drawingApp.changeSize($(this).text());});
   $('.tool-buttons a').click(function() {drawingApp.changeTool($(this).text());});
   $('#sendtoserver').click(function() {
-    canvas = document.getElementById('canvasDiv');
     var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
     $.ajax({
         type: "POST",
