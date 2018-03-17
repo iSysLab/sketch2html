@@ -7,15 +7,15 @@ function ToSketch2HTML(){
 function listener(e){
 	switch (e.type) {
 		case "mousedown":
-			drawingApp.initDraw(e);
+			drawingApp.crayon_init_Draw(e);
 			break;
 		case "mousemove":
 			if(drawingApp.pos.drawable)
-				drawingApp.draw(e);
+				drawingApp.crayon_move_Draw(e);
 			break;
 		case "mouseout":
 		case "mouseup":
-			drawingApp.finishDraw();
+			drawingApp.crayon_finish_Draw();
 			break;
 	}
 };
@@ -52,7 +52,7 @@ var drawingApp = new function (){
 		this.context.fill();
 	}
 
-	this.initDraw = function(e){
+	this.crayon_init_Draw = function(e){
 		this.context.lineCap = "round";
 		this.context.lineJoin = "round";
 		this.context.lineWidth = this.curRadius;
@@ -77,7 +77,7 @@ var drawingApp = new function (){
 		}
 	};
 
-	this.draw = function(e){
+	this.crayon_move_Draw = function(e){
 		var coors = this.getPosition(e);
 		this.context.lineTo(coors.X, coors.Y);
 		this.pos.X = coors.X;
@@ -85,7 +85,7 @@ var drawingApp = new function (){
 		this.context.stroke();
 	};
 
-	this.finishDraw = function(){
+	this.crayon_finish_Draw = function(){
 		this.pos.drawable = false;
 		this.pos.X = -1;
 		this.pos.Y = -1;
