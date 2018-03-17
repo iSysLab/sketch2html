@@ -39,25 +39,25 @@
 
          window.onload = function() {
               canvas = document.getElementById("canvas");
-              if (canvas == null || canvas.getContext == null) return;
+
               ctx = canvas.getContext("2d");
               canvas.onmousedown = function(e) {
-                   e.preventDefault();
+
                    // 시작 좌표 구함
                    sx = canvasX(e.clientX);
                    sy = canvasY(e.clientY);
                    // 백업 뜨고 그리기 시작
-                   //backup = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                   backup = ctx.getImageData(0, 0, canvas.width, canvas.height);
                    drawing = true;
               }
 
               canvas.onmousemove = function(e) {
-                   e.preventDefault();
+
                    ex = canvasX(e.clientX);
                    ey = canvasY(e.clientY);
                    // 백업 복구하고 현재 선 그림
                    if (drawing) {
-                        //ctx.putImageData(backup, 0, 0);
+                        ctx.putImageData(backup, 0, 0);
                         ctx.beginPath();
                         ctx.moveTo(sx, sy);
                         ctx.lineTo(ex, ey);
