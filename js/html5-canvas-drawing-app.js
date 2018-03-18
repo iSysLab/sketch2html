@@ -5,18 +5,34 @@ function ToSketch2HTML(){
 };
 
 function listener(e){
-	switch (e.type) {
-		case "mousedown":
-			drawingApp.crayon_init_Draw(e);
-			break;
-		case "mousemove":
-			if(drawingApp.pos.drawable)
-				drawingApp.crayon_move_Draw(e);
-			break;
-		case "mouseout":
-		case "mouseup":
-			drawingApp.crayon_finish_Draw();
-			break;
+	if (drawingApp.curTool == "line"){
+		switch (e.type) {
+			case "mousedown":
+				drawingApp.line_init_Draw(e);
+				break;
+			case "mousemove":
+				if(drawingApp.pos.drawable)
+					drawingApp.line_move_Draw(e);
+				break;
+			case "mouseout":
+			case "mouseup":
+				drawingApp.finish_Draw();
+				break;
+		}
+	}else{
+		switch (e.type) {
+			case "mousedown":
+				drawingApp.crayon_init_Draw(e);
+				break;
+			case "mousemove":
+				if(drawingApp.pos.drawable)
+					drawingApp.crayon_move_Draw(e);
+				break;
+			case "mouseout":
+			case "mouseup":
+				drawingApp.finish_Draw();
+				break;
+		}
 	}
 };
 var drawingApp = new function (){
@@ -45,6 +61,7 @@ var drawingApp = new function (){
 	this.sizeLarge = "10";
 	this.sizeHuge = "20";
 	this.curRadius = this.sizeNormal;
+	this.backup;
 
 	this.clearCanvas = function(){
 		this.context.fillStyle = this.colorWhite;
@@ -59,22 +76,13 @@ var drawingApp = new function (){
 		this.context.strokeStyle = this.curColor;
 		this.context.beginPath();
 		this.pos.drawable = true;
-		if (this.curTool == "crayon"){
-			var coors = this.getPosition(e);
-			this.pos.X = coors.X;
-			this.pos.Y = coors.Y;
-			this.context.moveTo(this.pos.X, this.pos.Y);
-		}else if(this.curTool == "line"){
-			alert("line")
-		}else if(this.curTool == "eraser"){
+		if(this.curTool == "eraser"){
 			this.context.strokeStyle = this.colorWhite;
-			var coors = this.getPosition(e);
-			this.pos.X = coors.X;
-			this.pos.Y = coors.Y;
-			this.context.moveTo(this.pos.X, this.pos.Y);
-		}else{
-
 		}
+		var coors = this.getPosition(e);
+		this.pos.X = coors.X;
+		this.pos.Y = coors.Y;
+		this.context.moveTo(this.pos.X, this.pos.Y);
 	};
 
 	this.crayon_move_Draw = function(e){
@@ -85,7 +93,28 @@ var drawingApp = new function (){
 		this.context.stroke();
 	};
 
-	this.crayon_finish_Draw = function(){
+	this.line_init_Draw = function(e){
+		this.backup = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		this.context.lineCap = "round";
+		this.context.lineJoin = "round";
+		this.context.lineWidth = this.curRadius;
+		this.context.strokeStyle = this.curColor;
+		this.pos.drawable = true;
+		var coors = this.getPosition(e);
+		this.pos.X = coors.X;
+		this.pos.Y = coors.Y;
+	};
+
+	this.line_move_Draw = function(e){
+		this.context.putImageData(this.backup, 0, 0);
+    this.context.beginPath();
+		this.context.moveTo(this.pos.X, this.pos.Y);
+    var coors = this.getPosition(e);
+		this.context.lineTo(coors.X, coors.Y);
+		this.context.stroke();
+	};
+
+	this.finish_Draw = function(){
 		this.pos.drawable = false;
 		this.pos.X = -1;
 		this.pos.Y = -1;
