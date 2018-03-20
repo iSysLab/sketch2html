@@ -1,10 +1,11 @@
+var stack = [];
 
 function ToSketch2HTML(){
   var url = document.location.href;
   location.href = url;
 };
 
-function listener(e){
+function mouselistener(e){
 	if (drawingApp.curTool == "line"){
 		switch (e.type) {
 			case "mousedown":
@@ -35,8 +36,32 @@ function listener(e){
 		}
 	}
 };
-var drawingApp = new function (){
 
+function keylistener(e) {
+  var eventObject = window.event ? event : e
+  switch (e.type) {
+    case "keypress":
+      //Do action on CTRL + Z
+      if (eventObject.keyCode == 90 && eventObject.ctrlKey) {
+        if (this.stack.length > 0){
+          console.log(this.stack.length);
+          drawingApp.context.putImageData(this.stack.pop(), 0, 0);
+        }
+      }
+      break;
+    case "keydown":
+      //Do action on CTRL + Z
+      if (eventObject.keyCode == 90 && eventObject.ctrlKey) {
+        if (this.stack.length > 0){
+          console.log(this.stack.length);
+          drawingApp.context.putImageData(this.stack.pop(), 0, 0);
+        }
+      }
+      break;
+  }
+};
+
+var drawingApp = new function (){
 	this.pos = {
 		drawable: false,
 		x: -1,
@@ -115,6 +140,7 @@ var drawingApp = new function (){
 	};
 
 	this.finish_Draw = function(){
+    this.stack.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.pos.drawable = false;
 		this.pos.X = -1;
 		this.pos.Y = -1;
@@ -122,7 +148,7 @@ var drawingApp = new function (){
 
 	this.getPosition = function(e){
 		var x = event.pageX - this.canvas.offsetLeft;
-		var y = event.pageY - this.canvas.offsetTop - 100;
+		var y = event.pageY - this.canvas.offsetTop;
 		return {X: x, Y: y};
 	};
 
@@ -166,6 +192,7 @@ var drawingApp = new function (){
 
 	this.clearDrawing = function() {
 			this.clearCanvas();
+      this.stack.length
 	};
 };
 
@@ -174,10 +201,12 @@ document.addEventListener("DOMContentLoaded", function(){
 	drawingApp.canvas = document.getElementById("canvasDiv");
 	drawingApp.context = drawingApp.canvas.getContext("2d");
 	drawingApp.clearCanvas();
-	drawingApp.canvas.addEventListener("mousedown", listener);
-	drawingApp.canvas.addEventListener("mousemove", listener);
-	drawingApp.canvas.addEventListener("mouseup", listener);
-	drawingApp.canvas.addEventListener("mouseout", listener);
+	drawingApp.canvas.addEventListener("mousedown", mouselistener);
+	drawingApp.canvas.addEventListener("mousemove", mouselistener);
+	drawingApp.canvas.addEventListener("mouseup", mouselistener);
+	drawingApp.canvas.addEventListener("mouseout", mouselistener);
+  window.addEventListener("keypress", keylistener, true);
+  window.addEventListener("keydown", keylistener, true);
 
 	$('.color-buttons a').click(function() {drawingApp.changeColor($(this).text());});
   $('.size-buttons a').click(function() {drawingApp.changeSize($(this).text());});

@@ -5,3 +5,11 @@
 #body{
   margin-top: 100px;
 }
+
+#contents{
+  display: flex;
+}
+
+#canvas{
+  margin-right: 20px;
+}
