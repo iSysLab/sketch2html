@@ -1,6 +1,6 @@
 function getImage(){
   var ts = new Date().getTime();
-  document.getElementById("out_img").innerHTML ="<img src='images/origin.jpg?timestamp=" + ts + "'/>";
+  document.getElementById("out_img").innerHTML ="<img src='../images/origin.jpg?timestamp=" + ts + "'/>";
 };
 
 //main

@@ -3,6 +3,8 @@ from PIL import Image, ImageDraw
 from io import BytesIO
 import re
 import base64
+# import layoutDetection
+# from time import sleep
 
 app = Flask(__name__)
 
@@ -17,6 +19,10 @@ def out():
 @app.route('/images/<path:path>')
 def send_images(path):
     return send_from_directory('images', path)
+
+@app.route('/gui/<path:path>')
+def send_gui(path):
+    return send_from_directory('gui', path)
 
 @app.route('/css/<path:path>')
 def send_css(path):
@@ -33,6 +39,8 @@ def send_img():
     image_data = re.sub('^data:image/.+;base64,', '', image_b64)  # to remove data:image/png;base64
     img = Image.open(BytesIO(base64.b64decode(image_data)))
     img.save('images/origin.jpg')
+    #sleep(2)
+    # layoutDetection.main("images/origin.jpg")
     # sketch to out.html
     return 'OK'
 
