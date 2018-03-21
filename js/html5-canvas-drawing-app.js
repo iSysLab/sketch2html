@@ -62,6 +62,7 @@ function keylistener(e) {
 };
 
 var drawingApp = new function (){
+  this.stack = [];
 	this.pos = {
 		drawable: false,
 		x: -1,
