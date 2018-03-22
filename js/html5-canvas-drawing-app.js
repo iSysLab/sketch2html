@@ -23,21 +23,7 @@ function drawEllipse(ctx, x, y, w, h) {
 };
 
 function listener(e){
-	if (drawingApp.curTool == "line"){
-		switch (e.type) {
-			case "mousedown":
-				drawingApp.line_init_Draw(e);
-				break;
-			case "mousemove":
-				if(drawingApp.pos.drawable)
-					drawingApp.line_move_Draw(e);
-				break;
-			case "mouseout":
-			case "mouseup":
-				drawingApp.finish_Draw();
-				break;
-		}
-	}else if(drawingApp.curTool == "crayon"){
+	if(drawingApp.curTool == "crayon" || drawingApp.curTool == "eraser"){
 		switch (e.type) {
 			case "mousedown":
 				drawingApp.crayon_init_Draw(e);
@@ -45,6 +31,20 @@ function listener(e){
 			case "mousemove":
 				if(drawingApp.pos.drawable)
 					drawingApp.crayon_move_Draw(e);
+				break;
+			case "mouseout":
+			case "mouseup":
+				drawingApp.finish_Draw();
+				break;
+		}
+	}else if (drawingApp.curTool == "line"){
+		switch (e.type) {
+			case "mousedown":
+				drawingApp.line_init_Draw(e);
+				break;
+			case "mousemove":
+				if(drawingApp.pos.drawable)
+					drawingApp.line_move_Draw(e);
 				break;
 			case "mouseout":
 			case "mouseup":
@@ -88,16 +88,20 @@ function keylistener(e) {
     case "keypress":
       //Do action on CTRL + Z
       if (eventObject.keyCode == 90 && eventObject.ctrlKey) {
-        if (this.stack.length > 0){
-          drawingApp.context.putImageData(this.stack.pop(), 0, 0);
+        if (drawingApp.undo.length > 0){
+					drawingApp.clearCanvas();
+					console.log("ctrl + z");
+          drawingApp.context.putImageData(drawingApp.undo.pop(), 0, 0);
         }
       }
       break;
     case "keydown":
       //Do action on CTRL + Z
       if (eventObject.keyCode == 90 && eventObject.ctrlKey) {
-        if (this.stack.length > 0){
-          drawingApp.context.putImageData(this.stack.pop(), 0, 0);
+        if (drawingApp.undo.length > 0){
+					drawingApp.clearCanvas();
+					console.log("ctrl + z");
+          drawingApp.context.putImageData(drawingApp.undo.pop(), 0, 0);
         }
       }
       break;
@@ -105,7 +109,8 @@ function keylistener(e) {
 };
 
 var drawingApp = new function (){
-	this.stack = [];
+	this.undo = [];
+	this.redo = [];
 	this.pos = {
 		drawable: false,
 		x: -1,
@@ -177,9 +182,9 @@ var drawingApp = new function (){
 
 	this.line_move_Draw = function(e){
 		this.context.putImageData(this.backup, 0, 0);
-    	this.context.beginPath();
+    this.context.beginPath();
 		this.context.moveTo(this.pos.X, this.pos.Y);
-    	var coors = this.getPosition(e);
+    var coors = this.getPosition(e);
 		this.context.lineTo(coors.X, coors.Y);
 		this.context.stroke();
 	};
@@ -229,7 +234,7 @@ var drawingApp = new function (){
 	};
 
 	this.finish_Draw = function(){
-		this.stack.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
+		this.undo.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.pos.drawable = false;
 		this.pos.X = -1;
 		this.pos.Y = -1;
@@ -282,6 +287,7 @@ var drawingApp = new function (){
 
 	this.clearDrawing = function() {
 			this.clearCanvas();
+			this.undo.length = 0;
 	};
 };
 
