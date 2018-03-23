@@ -45,13 +45,17 @@
               <li class="color-buttons"><a href="#">Black<div style="width:100%; height:5px; background-color:black;"></div></a></li>
             </ul>
           </li>
-          <input type='file' name='img' id='uploadimage' />
-          <li>
-            <a href="#" id='sendtoserver'>SendToServer</a>
-          </li>
           <button class="btn navbar-btn" onclick="drawingApp.Undo()">Undo</button>
           <!-- <button class="btn navbar-btn" onclick="drawingApp.Redo()">Redo</button> -->
           <button class="btn btn-danger navbar-btn" onclick="drawingApp.clearDrawing()">Clear</button>
+          <button class="btn btn-success navbar-btn" id = "sendtoserver">SendToServer</button>
+
+          <input id="uploadFile" placeholder="Choose File" disabled="disabled" />
+          <div class="fileUpload btn btn-warning">
+            <span>Select File</span>
+            <input id="uploadBtn" type="file" class="upload" />
+          </div>
+
         </ul>
       </div>
     </nav>

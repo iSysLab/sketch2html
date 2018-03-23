@@ -336,7 +336,7 @@ var drawingApp = new function (){
 //main
 document.addEventListener("DOMContentLoaded", function(){
 	drawingApp.canvas = document.getElementById("canvasDiv");
-	drawingApp.fileloader = document.getElementById("uploadimage");
+	drawingApp.fileloader = document.getElementById("uploadBtn");
 	drawingApp.context = drawingApp.canvas.getContext("2d");
 	drawingApp.clearCanvas();
 	drawingApp.canvas.addEventListener("mousedown", listener, false);
@@ -364,4 +364,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		$("#out_frame").attr("src", "out?timestamp=" + ts);
 		});
 	});
+	document.getElementById("uploadBtn").onchange = function () {
+    document.getElementById("uploadFile").value = this.value;
+	};
 });
