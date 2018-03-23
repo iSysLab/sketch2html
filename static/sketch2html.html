@@ -17,7 +17,7 @@
           <a class="navbar-brand" onclick = "ToSketch2HTML()">Sketch2HTML</a>
         </div>
         <ul class="nav navbar-nav">
-          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tool <span class="caret"></span></a>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Tool<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="tool-buttons"><a href="#">Crayon</a></li>
               <li class="tool-buttons"><a href="#">Line</a></li>
@@ -26,7 +26,7 @@
               <li class="tool-buttons"><a href="#">Eraser</a></li>
             </ul>
           </li>
-          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Size <span class="caret"></span></a>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Size<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="size-buttons"><a href="#">Small<div style="width:100%; height:2px; background-color:Black;"></div></a></li>
               <li class="size-buttons"><a href="#">Normal<div style="width:100%; height:5px; background-color:Black;"></div></a></li>
@@ -34,7 +34,7 @@
               <li class="size-buttons"><a href="#">Huge<div style="width:100%; height:20px; background-color:Black;"></div></a></li>
             </ul>
           </li>
-          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Color <span class="caret"></span></a>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Color<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li class="color-buttons"><a href="#">Red<div style="width:100%; height:5px; background-color:Red;"></div></a></li>
               <li class="color-buttons"><a href="#">Blue<div style="width:100%; height:5px; background-color:Blue;"></div></a></li>
@@ -45,9 +45,12 @@
               <li class="color-buttons"><a href="#">Black<div style="width:100%; height:5px; background-color:black;"></div></a></li>
             </ul>
           </li>
+          <input type='file' name='img' id='uploadimage' />
           <li>
             <a href="#" id='sendtoserver'>SendToServer</a>
           </li>
+          <button class="btn navbar-btn" onclick="drawingApp.Undo()">Undo</button>
+          <!-- <button class="btn navbar-btn" onclick="drawingApp.Redo()">Redo</button> -->
           <button class="btn btn-danger navbar-btn" onclick="drawingApp.clearDrawing()">Clear</button>
         </ul>
       </div>

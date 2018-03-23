@@ -24,6 +24,10 @@ def send_images(path):
 def send_gui(path):
     return send_from_directory('gui', path)
 
+@app.route('/examples/<path:path>')
+def send_examples(path):
+    return send_from_directory('examples', path)
+
 @app.route('/css/<path:path>')
 def send_css(path):
     return send_from_directory('css', path)

@@ -88,11 +88,13 @@ function keylistener(e) {
     case "keypress":
       //Do action on CTRL + Z
       if (eventObject.keyCode == 90 && eventObject.ctrlKey) {
-        if (drawingApp.undo.length > 0){
+				if (drawingApp.undo.length > 0){
 					drawingApp.clearCanvas();
-					console.log("ctrl + z");
-          drawingApp.context.putImageData(drawingApp.undo.pop(), 0, 0);
-        }
+					var undoImage = drawingApp.undo.pop();
+					// drawingApp.redo.push(undoImage);
+					drawingApp.context.putImageData(undoImage, 0, 0);
+					console.log("Undo : ctrl + z : keypress");
+				}
       }
       break;
     case "keydown":
@@ -100,23 +102,39 @@ function keylistener(e) {
       if (eventObject.keyCode == 90 && eventObject.ctrlKey) {
         if (drawingApp.undo.length > 0){
 					drawingApp.clearCanvas();
-					console.log("ctrl + z");
-          drawingApp.context.putImageData(drawingApp.undo.pop(), 0, 0);
+					var undoImage = drawingApp.undo.pop();
+					// drawingApp.redo.push(undoImage);
+					drawingApp.context.putImageData(undoImage, 0, 0);
+					console.log("Undo : ctrl + z : keydown");
         }
       }
       break;
   }
 };
 
+function fileOpen(){
+	console.log("aa");
+	var img = new Image();
+	drawingApp.file = drawingApp.fileloader.files[0];
+	var url = window.URL || window.webkitURL;
+	var src = url.createObjectURL(drawingApp.file);
+	img.src = src;
+	img.onload = function() {
+			drawingApp.context.drawImage(img, 0, 0);
+			url.revokeObjectURL(src);
+	}
+};
+
 var drawingApp = new function (){
 	this.undo = [];
-	this.redo = [];
+	// this.redo = [];
 	this.pos = {
 		drawable: false,
 		x: -1,
 		y: -1,
 	};
-
+	this.file;
+	this.fileloader;
 	this.canvas;
 	this.context;
 	this.curTool = "crayon";
@@ -145,6 +163,7 @@ var drawingApp = new function (){
 	}
 
 	this.crayon_init_Draw = function(e){
+		this.undo.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.context.lineCap = "round";
 		this.context.lineJoin = "round";
 		this.context.lineWidth = this.curRadius;
@@ -169,6 +188,7 @@ var drawingApp = new function (){
 	};
 
 	this.line_init_Draw = function(e){
+		this.undo.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.backup = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 		this.context.lineCap = "round";
 		this.context.lineJoin = "round";
@@ -190,6 +210,7 @@ var drawingApp = new function (){
 	};
 
 	this.rectangle_init_Draw = function(e){
+		this.undo.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.backup = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 		this.context.lineCap = "round";
 		this.context.lineJoin = "round";
@@ -212,6 +233,7 @@ var drawingApp = new function (){
 	};
 
 	this.circle_init_Draw = function(e){
+		this.undo.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.backup = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 		this.context.lineCap = "round";
 		this.context.lineJoin = "round";
@@ -234,7 +256,6 @@ var drawingApp = new function (){
 	};
 
 	this.finish_Draw = function(){
-		this.undo.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 		this.pos.drawable = false;
 		this.pos.X = -1;
 		this.pos.Y = -1;
@@ -286,27 +307,51 @@ var drawingApp = new function (){
 	};
 
 	this.clearDrawing = function() {
-			this.clearCanvas();
-			this.undo.length = 0;
+		this.clearCanvas();
+		this.undo.length = 0;
+		this.redo.length = 0;
 	};
+
+	this.Undo = function(){
+		if (this.undo.length > 0){
+			drawingApp.clearCanvas();
+			var undoImage = drawingApp.undo.pop();
+			// this.redo.push(undoImage);
+			this.context.putImageData(undoImage, 0, 0);
+			console.log("Undo");
+		}
+	};
+
+	// this.Redo = function(){
+	// 	if (this.redo.length > 0){
+	// 		this.clearCanvas();
+	// 		var redoImage = drawingApp.redo.pop();
+	// 		this.undo.push(redoImage);
+	// 		this.context.putImageData(redoImage, 0, 0);
+	// 		console.log("Redo");
+	// 	}
+	// };
 };
 
 //main
 document.addEventListener("DOMContentLoaded", function(){
 	drawingApp.canvas = document.getElementById("canvasDiv");
+	drawingApp.fileloader = document.getElementById("uploadimage");
 	drawingApp.context = drawingApp.canvas.getContext("2d");
 	drawingApp.clearCanvas();
-	drawingApp.canvas.addEventListener("mousedown", listener);
-	drawingApp.canvas.addEventListener("mousemove", listener);
-	drawingApp.canvas.addEventListener("mouseup", listener);
-	drawingApp.canvas.addEventListener("mouseout", listener);
-  window.addEventListener("keypress", keylistener, true);
-  window.addEventListener("keydown", keylistener, true);
+	drawingApp.canvas.addEventListener("mousedown", listener, false);
+	drawingApp.canvas.addEventListener("mousemove", listener, false);
+	drawingApp.canvas.addEventListener("mouseup", listener, false);
+	drawingApp.canvas.addEventListener("mouseout", listener, false);
+	drawingApp.fileloader.addEventListener("change", fileOpen, false);
+  window.addEventListener("keypress", keylistener, false);
+  window.addEventListener("keydown", keylistener, false);
 	$('.color-buttons a').click(function() {drawingApp.changeColor($(this).text());});
   $('.size-buttons a').click(function() {drawingApp.changeSize($(this).text());});
   $('.tool-buttons a').click(function() {drawingApp.changeTool($(this).text());});
-  $('#sendtoserver').click(function() {
+	$('#sendtoserver').click(function() {
 	var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
+
 	$.ajax({
 		type: "POST",
 		url: "/send_img",
