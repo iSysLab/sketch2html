@@ -12,13 +12,13 @@ app = Flask(__name__)
 def index():
     return app.send_static_file('sketch2html.html')
 
-@app.route('/out')
-def out():
-    return app.send_static_file('out.html')
-
 @app.route('/images/<path:path>')
 def send_images(path):
     return send_from_directory('images', path)
+
+@app.route('/gif/<path:path>')
+def send_gif(path):
+    return send_from_directory('gif', path)
 
 @app.route('/gui/<path:path>')
 def send_gui(path):
@@ -46,9 +46,14 @@ def send_img():
     image_data = re.sub('^data:image/.+;base64,', '', image_b64)  # to remove data:image/png;base64
     img = Image.open(BytesIO(base64.b64decode(image_data)))
     img.save('images/origin.jpg')
-    sleep(5)
+
+    #--converting start--
+
+
     # layoutDetection.main("images/origin.jpg")
     # sketch to out.html
+
+    #--converting time end--
     return 'OK'
 
 if __name__=='__main__':

@@ -351,18 +351,26 @@ document.addEventListener("DOMContentLoaded", function(){
   $('.tool-buttons a').click(function() {drawingApp.changeTool($(this).text());});
 	$('#uploadBtn').change(function(){document.getElementById("uploadFile").value = this.value;});
 	$('#sendtoserver').click(function() {
-	var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
-
-	$.ajax({
-		type: "POST",
-		url: "/send_img",
-		data: {
-			 imgBase64: dataURL
-		}
-	}).done(function(o) {
-		// reload output iframe
-		var ts = new Date().getTime();
-		$("#out_frame").attr("src", "../html/sketch2html.html?timestamp=" + ts);
+		var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
+		$.ajax({
+			type: "POST",
+			url: "/send_img",
+			data: {
+				 imgBase64: dataURL
+			},
+			success: function(o) {
+				// reload output iframe
+				var ts = new Date().getTime();
+				$("#sendtoserver").attr('disabled',false);
+				$("#out_frame").attr("src", "../html/sketch2html_result.html?timestamp=" + ts);
+				$('.wrap-loading').addClass('display-none');
+			},
+			beforeSend: function(o) {
+				// reload output iframe
+				var ts = new Date().getTime();
+				$("#sendtoserver").attr('disabled',true);
+				$('.wrap-loading').removeClass('display-none');
+			}
 		});
 	});
 });
