@@ -4,7 +4,7 @@ from io import BytesIO
 import re
 import base64
 # import layoutDetection
-# from time import sleep
+from time import sleep
 
 app = Flask(__name__)
 
@@ -24,6 +24,10 @@ def send_images(path):
 def send_gui(path):
     return send_from_directory('gui', path)
 
+@app.route('/html/<path:path>')
+def send_html(path):
+    return send_from_directory('html', path)
+
 @app.route('/examples/<path:path>')
 def send_examples(path):
     return send_from_directory('examples', path)
@@ -36,14 +40,13 @@ def send_css(path):
 def send_js(path):
     return send_from_directory('js', path)
 
-
 @app.route('/send_img', methods=['POST'])
 def send_img():
     image_b64 = request.values['imgBase64']
     image_data = re.sub('^data:image/.+;base64,', '', image_b64)  # to remove data:image/png;base64
     img = Image.open(BytesIO(base64.b64decode(image_data)))
     img.save('images/origin.jpg')
-    #sleep(2)
+    sleep(5)
     # layoutDetection.main("images/origin.jpg")
     # sketch to out.html
     return 'OK'

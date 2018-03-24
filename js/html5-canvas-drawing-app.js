@@ -349,6 +349,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	$('.color-buttons a').click(function() {drawingApp.changeColor($(this).text());});
   $('.size-buttons a').click(function() {drawingApp.changeSize($(this).text());});
   $('.tool-buttons a').click(function() {drawingApp.changeTool($(this).text());});
+	$('#uploadBtn').change(function(){document.getElementById("uploadFile").value = this.value;});
 	$('#sendtoserver').click(function() {
 	var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
 
@@ -361,10 +362,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	}).done(function(o) {
 		// reload output iframe
 		var ts = new Date().getTime();
-		$("#out_frame").attr("src", "out?timestamp=" + ts);
+		$("#out_frame").attr("src", "../html/sketch2html.html?timestamp=" + ts);
 		});
 	});
-	document.getElementById("uploadBtn").onchange = function () {
-    document.getElementById("uploadFile").value = this.value;
-	};
 });
