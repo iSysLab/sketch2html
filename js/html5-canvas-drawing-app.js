@@ -369,7 +369,12 @@ document.addEventListener("DOMContentLoaded", function(){
 				var ts = new Date().getTime();
 				$("#sendtoserver").attr('disabled',true);
 				$('.wrap-loading').removeClass('display-none');
-			}
+			},
+			error: function(o){
+				$("#sendtoserver").attr('disabled',false);
+				$('.wrap-loading').addClass('display-none');
+			},
+			timeout: 60000, 		//timeout 60 seconds
 		});
 	});
 });
