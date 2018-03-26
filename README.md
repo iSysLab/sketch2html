@@ -6,3 +6,5 @@
 * python app.py
 * Type http://127.0.0.1:5000 in chrome browser
 
+### excepted file
+model model_frcnn(b/c : file size > 100MB)
