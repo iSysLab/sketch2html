@@ -1,0 +1,53 @@
+.body{
+	display : flex;
+}
+#div0{
+	width : 100.0%;
+	height : 14.666666666666666%;
+	border-collapse : collapse;
+	margin : -1px;
+	border : 1px solid black;
+	flex : 1;
+}
+#div1{
+	width : 100.0%;
+	height : 85.33333333333334%;
+	border-collapse : collapse;
+	margin : -1px;
+	border : 0px;
+	flex : 1;
+}
+#div2{
+	width : 14.000000000000002%;
+	height : 100.0%;
+	border-collapse : collapse;
+	margin : -1px;
+	border : 1px solid black;
+	flex : 1;
+	float : left;
+}
+#div4{
+	width : 100.0%;
+	height : 23.6328125%;
+	border-collapse : collapse;
+	margin : -1px;
+	border : 1px solid black;
+	flex : 1;
+}
+#div5{
+	width : 100.0%;
+	height : 76.3671875%;
+	border-collapse : collapse;
+	margin : -1px;
+	border : 1px solid black;
+	flex : 1;
+}
+#div3{
+	width : 86.0%;
+	height : 100.0%;
+	border-collapse : collapse;
+	margin : -1px;
+	border : 0px;
+	flex : 1;
+	float : left;
+}

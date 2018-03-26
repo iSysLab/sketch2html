@@ -113,7 +113,6 @@ function keylistener(e) {
 };
 
 function fileOpen(){
-	console.log("aa");
 	var img = new Image();
 	drawingApp.file = drawingApp.fileloader.files[0];
 	var url = window.URL || window.webkitURL;

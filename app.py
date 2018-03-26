@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 from io import BytesIO
 import re
 import base64
-# import layoutDetection
+import layoutDetection
 from time import sleep
 
 app = Flask(__name__)
@@ -50,7 +50,7 @@ def send_img():
     #--converting start--
 
 
-    # layoutDetection.main("images/origin.jpg")
+    layoutDetection.main("images/origin.jpg")
     # sketch to out.html
 
     #--converting time end--
