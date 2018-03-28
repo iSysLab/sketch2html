@@ -351,26 +351,32 @@ document.addEventListener("DOMContentLoaded", function(){
 	$('#uploadBtn').change(function(){document.getElementById("uploadFile").value = this.value;});
 	$('#sendtoserver').click(function() {
 		var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
+		var ts = new Date().getTime();
+		var html_filename;
+		var path = "../html/"
 		$.ajax({
 			type: "POST",
 			url: "/send_img",
 			data: {
-				 imgBase64: dataURL
-			},
-			success: function(o) {
-				// reload output iframe
-				var ts = new Date().getTime();
-				$("#sendtoserver").attr('disabled',false);
-				$("#out_frame").attr("src", "../html/sketch2html_result.html?timestamp=" + ts);
-				$('.wrap-loading').addClass('display-none');
+				 imgBase64: dataURL,
+				 timestamp: ts
 			},
 			beforeSend: function(o) {
 				// reload output iframe
-				var ts = new Date().getTime();
+				html_filename = "sketch2html_result_" + ts + ".html";
+				path = path + html_filename;
 				$("#sendtoserver").attr('disabled',true);
 				$('.wrap-loading').removeClass('display-none');
 			},
+			success: function(o) {
+				// reload output iframe
+				console.log("success");
+				$("#sendtoserver").attr('disabled',false);
+				$("#out_frame").attr("src", path);
+				$('.wrap-loading').addClass('display-none');
+			},
 			error: function(o){
+				console.log("error");
 				$("#sendtoserver").attr('disabled',false);
 				$('.wrap-loading').addClass('display-none');
 			},

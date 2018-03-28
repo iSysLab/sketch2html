@@ -1,0 +1,50 @@
+#div0{
+	width : 100.0%;
+	height : 21.0%;
+	margin : -1px;
+	border : 1px solid black;
+}
+#div1{
+	width : 18.625%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div2{
+	width : 81.375%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div3{
+	width : 100.0%;
+	height : 79.0%;
+	margin : -1px;
+	border : 1px solid black;
+}
+#div4{
+	width : 18.625%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div5{
+	width : 36.5625%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div6{
+	width : 44.8125%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#button0{
+	margin : 10px;
+}

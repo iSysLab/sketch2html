@@ -218,7 +218,7 @@ class Html:
         self.divCssStack = []  # div css
         self.css = None
         self.f=[]
-        self.objectNum= {"div":0, "tebLV":0, "button":0, "checkBox":0, "editText":0, "radioButton":0}
+        self.objectNum= {"div":0, "tebLV":0, "button":0, "checkBox":0, "editText":0, "radioButton":0,"text":0}
         self.divList=[]#Front div id + size
         self.rectList=[]# Total pre div
 
@@ -228,7 +228,9 @@ class Html:
             self.text = "<html>\n"
         if css != None:
             self.f.append(open("html/"+css+".css", "w"))
-            self.text += "<head><link rel=stylesheet type=text/css href="+css+".css></head>\n"
+            self.text += "<head><META HTTP-EQUIV=Expires CONTENT=Mon, 06 Jan 1990 00:00:01 GMT><META HTTP-EQUIV=Expires CONTENT=-1><META HTTP-EQUIV=Pragma CONTENT=no-cache><META HTTP-EQUIV=Cache-Control CONTENT=no-cache>\n"
+            self.text += "<link rel=stylesheet type=text/css href=" + css + ".css/>"
+            self.text += "</head>\n"
             self.css=""
         self.text += "<body>\n"
 
@@ -253,7 +255,10 @@ class Html:
     def objectAppendStack(self,detectedObjects):
         layoutObjects=[]
         for objectItem in detectedObjects[0][1][0]:
-            type= objectItem[0]
+            if(objectItem[0]=="editText1" or objectItem[0]=="editText2" or objectItem[0]=="editText"):
+                type = "editText"
+            else:
+                type= objectItem[0]
             ox1,oy1,ox2,oy2 = int(objectItem[1][0]),int(objectItem[1][1]),int(objectItem[1][2]),int(objectItem[1][3])
             for layoutItem in self.divList:
                 typeAndId=str(np.squeeze(layoutItem[0]))
@@ -261,15 +266,33 @@ class Html:
                 if ox1>lx1 and oy1>ly1 and ox2<lx2 and oy2<ly2:
                     layoutObjects.append([typeAndId,type,[ox1,oy1,ox2,oy2]])
                     break
-        layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0], reverse=True)
-        for layoutObject in layoutObjects:
+        layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0])
+        layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][1])
+        layoutObjects = sorted(layoutObjects, key=lambda _line: _line[0])
+        layoutObjects2= layoutObjects.copy()
+        pre = None
+        ip = 0
+        for i, layoutObject in enumerate(layoutObjects):
+            if pre == None or pre[0] != layoutObject[0]:
+                pre = layoutObject
+            else:
+                if (abs(pre[2][1] - layoutObject[2][1]) > 10):# 위치 비교 후 br추가
+                    layoutObjects2.insert(i + ip, [layoutObject[0], "<br>", None])
+                    ip += 1
+
+        #layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0], reverse=True)
+        layoutObjects2.reverse()
+        for layoutObject in layoutObjects2:
             for i,stackItem in enumerate(self.htmlStack):
                 stackTypeAndId =stackItem[0]+str(stackItem[1])
-                if layoutObject[0]==stackTypeAndId:
+                if layoutObject[0]==stackTypeAndId and layoutObject[2] !=None:
                     self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i+1)
+                    self.addCssList("#"+str(layoutObject[1])+str(self.objectNum[str(layoutObject[1])]),[{'margin':'10px'}])
                     self.objectNum[str(layoutObject[1])] += 1
                     break
-
+                elif layoutObject[0]==stackTypeAndId and layoutObject[2] ==None:
+                    self.addHtmlList(str(layoutObject[1]), None, None, i + 1)
+                    break
 
 
     def mappingP(self, p,width,height):
@@ -285,17 +308,22 @@ class Html:
         else:
             self.htmlStack.insert(inserting,object)
 
-
-
     def addDivList(self,id, width, height, etc):
         div = collections.OrderedDict()
         div['id'] = id
         div['width'] = str(width)+"%"
         div['height'] = str(height)+"%"
-        div['border-collapse'] = "collapse"
         div['margin'] = "-1px"
         div['border'] = "1px solid black"
-        div['flex'] = "1"
+        if etc != None:
+            for dict in etc:
+                for k, v in dict.items():
+                    div[k] = v
+        self.divCssStack.append(div)
+
+    def addCssList(self, id, etc):
+        div = collections.OrderedDict()
+        div['id'] = id
         if etc != None:
             for dict in etc:
                 for k, v in dict.items():
@@ -313,32 +341,26 @@ class Html:
             text+=" id=\""+type+str(htmlStackItem[1])
             text+="\">"+"\n"
         elif (type == "button" and htmlStackItem[2] == None):
-            self.objectNum["tebLV"] += 1
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"button\""
             text += " id=\"" + type + str(htmlStackItem[1])+"\""
             text += " value=\"button"
             text += "\"/>" + "\n"
-
         elif (type == "checkBox" and htmlStackItem[2] == None):
-
-            self.objectNum["tebLV"] += 1
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"checkbox\""
             text += " id=\"" + type + str(htmlStackItem[1]) + "\""
             text += "\"/>"
             text += "<label> check\n"
-        elif (type == "editText" and htmlStackItem[2] == None):
-            self.objectNum["tebLV"] += 1
+        elif ((type == "editText1" or type == "editText2" or type == "editText") and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"text\""
             text += " id=\"" + type + str(htmlStackItem[1])+"\""
             text += "\"/>\n"
         elif (type == "radioButton" and htmlStackItem[2] == None):
-            self.objectNum["tebLV"] += 1
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"radio\""
@@ -350,6 +372,10 @@ class Html:
                 text +="\t"
             self.objectNum["tebLV"] -= 1
             text+="</"+type+">\n"
+        else:
+            for teb in range(self.objectNum["tebLV"]):
+                text +="\t"
+            text += htmlStackItem[0]+"\n"
         return text
 
     def makeCssItem(self,cssStackItem):
@@ -369,13 +395,12 @@ class Html:
             return False
 
         self.rectList.append(rect)
-        print("rect:",rect)
+        #print("rect:",rect)
         return True
 
     def makeCols(self, html,madeRows, cols, img, insertL, appendL):
         th=self.threshold
         inCols=[]
-        fieldSet="<fieldset style=height:82%>"
         width,height= (insertL[0][2]-insertL[0][0]),(appendL[0][3]-insertL[0][3])
         for i, row in enumerate(madeRows):
             rectx1, recty1, rectx2, recty2 = row[0][0], row[0][1], row[0][2], row[0][3]
@@ -403,7 +428,7 @@ class Html:
                     html.addHtmlList("div", html.objectNum["div"], False,False)
                     html.addDivList(id="#div"+str(self.objectNum["div"]), width=html.mappingP(rectx2-rectx1, width, False),
                                     height=html.mappingP(recty2-recty1, False, height), etc=None)
-                    print("div" + str(self.objectNum["div"]))
+                    #print("div" + str(self.objectNum["div"]))
                     self.divList.append([["div" + str(self.objectNum["div"])],[rectx1,recty1,rectx2,recty2]])
                     html.upObjectNum("div",+1)
             else:
@@ -413,7 +438,7 @@ class Html:
                     cv2.line(img, (int(rectx1), int(recty2)), (int(rectx2), int(recty2)), (255, 50, 50), 8)
                     html.addHtmlList("div", html.objectNum["div"], True,False)
                     html.addDivList(id="#div" + str(self.objectNum["div"]), width=html.mappingP(rectx2 - rectx1, width, False),
-                                    height=html.mappingP(recty2 - recty1, False, height), etc=[{"border":"0px"}])
+                                    height=html.mappingP(recty2 - recty1, False, height), etc=None)# super layout
                     html.upObjectNum("div", +1)
                     flag=True
 
@@ -447,12 +472,12 @@ class Html:
                                 cv2.putText(img, "div" + str(lastDiv), (int(lx1) + 10, int(ly1) + 20),
                                             cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                                             (255, 0, 0), 2)
-                                print("div" + str(lastDiv))
+                                #print("div" + str(lastDiv))
                                 self.divList.append([["div" + str(lastDiv)], [lx1, ly1, rx2, ry2]])
                             else:
                                 html.addDivList(id="#div" + str(lastDiv),
                                                 width=html.mappingP(rx1 - lx1, width, False),
-                                                height=html.mappingP(height, False, height), etc=[{"float": "left"},{"border":"0px"}])
+                                                height=html.mappingP(height, False, height), etc=[{"float": "left"}])# super layout
                             html.addHtmlList("div", None, False,False)
 
                     else:
@@ -468,7 +493,7 @@ class Html:
                                             width=html.mappingP(rx1-lx1,width, False),
                                             height=html.mappingP(height, False, height), etc=[{"float": "left"}])
 
-                            print("div" + str(self.objectNum["div"]))
+                            #print("div" + str(self.objectNum["div"]))
                             self.divList.append([["div" + str(self.objectNum["div"])], [lx1, ly1, rx2, ry2]])
                             html.upObjectNum("div", +1)
                         pass
@@ -537,7 +562,7 @@ def roi(img,divList,color3=(255,255,255),color1=255):
     roiImg= cv2.bitwise_and(img,mask)
     return roiImg
 
-def main(image_src):
+def main(image_src,htmlFileName,cssFileName):
     #declare class
     lineMerge=LineMerge()
     getLine = GetLine()
@@ -569,19 +594,23 @@ def main(image_src):
     ##############
 
     html = Html(img)
-    html.startHtml("sketch2html_result", "sketch2html_result")
+    html.startHtml(htmlFileName, cssFileName)
     html.makeRows(html,rows,cols,img_merged_lines,[[0, 0, width, 0]],[[0, height, width, height]])
-    tmp=".body{\n\tdisplay : flex;\n}\n"
-    for i in html.divCssStack:
-        tmp += html.makeCssItem(i)
-    html.putCss(tmp)
+
+    #roiDiv = roi(origin,html.divList[1])
     #cv2.imshow("roi", roiDiv)
     #img_merged_lines = cv2.resize(img_merged_lines, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
 
     detectedObjects = test_frcnn.operation()
-    #detectedObjects = [[[0], [[['button', [496, 16, 608, 48]], ['button', [320, 16, 464, 48]], ['button', [528, 480, 656, 528]], ['button', [176, 16, 304, 48]], ['button', [16, 160, 112, 208]], ['button', [16, 16, 144, 64]], ['button', [544, 384, 656, 432]], ['button', [16, 256, 112, 288]], ['button', [16, 320, 112, 352]], ['button', [16, 96, 112, 144]], ['editText', [528, 272, 704, 320]], ['editText', [512, 80, 704, 144]], ['editText', [528, 160, 704, 224]], ['radioButton', [176, 96, 320, 256]], ['checkBox', [176, 368, 320, 560]]]]]]
+    #detectedObjects = [[[0], [[['button', [496, 16, 608, 48]], ['button', [320, 16, 464, 48]], ['button', [528, 480, 656, 528]], ['button', [176, 16, 304, 48]], ['button', [16, 160, 112, 208]], ['button', [16, 16, 144, 64]], ['button', [544, 384, 656, 432]], ['button', [16, 256, 112, 288]], ['button', [16, 320, 112, 352]], ['button', [16, 96, 112, 144]], ['editText1', [528, 272, 704, 320]], ['editText', [512, 80, 704, 144]], ['editText', [528, 160, 704, 224]], ['radioButton', [176, 96, 320, 256]], ['text', [176, 257, 320, 259]], ['checkBox', [176, 368, 320, 560]]]]]]
     #print(detectedObjects)
     html.objectAppendStack(detectedObjects)
+
+
+    tmp=""
+    for i in html.divCssStack:
+        tmp += html.makeCssItem(i)
+    html.putCss(tmp)
 
     tmp = ""
     for v in html.htmlStack:
@@ -590,8 +619,10 @@ def main(image_src):
     html.putHtml(tmp)
 
     html.endHtml()
-    cv2.imwrite("html/" + 'f.jpg',img_merged_lines)
+    #cv2.imwrite("html/" + 'layout.jpg',img_merged_lines)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 '''-------------------------main------------------------'''
+if __name__=='__main__':
+    main('images/image.jpg',"sketch2html_result", "sketch2html_result")

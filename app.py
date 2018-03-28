@@ -43,16 +43,14 @@ def send_js(path):
 @app.route('/send_img', methods=['POST'])
 def send_img():
     image_b64 = request.values['imgBase64']
+    ts = request.values['timestamp']
     image_data = re.sub('^data:image/.+;base64,', '', image_b64)  # to remove data:image/png;base64
     img = Image.open(BytesIO(base64.b64decode(image_data)))
+    html_filename = "sketch2html_result_" + ts
     img.save('images/origin.jpg')
-
     #--converting start--
-
-
-    layoutDetection.main("images/origin.jpg")
+    layoutDetection.main("images/origin.jpg", html_filename, html_filename)
     # sketch to out.html
-
     #--converting time end--
     return 'OK'
 
