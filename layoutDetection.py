@@ -3,6 +3,7 @@ import math
 import numpy as np
 import collections
 import test_frcnn
+import mser
 
 
 class LineMerge:
@@ -210,6 +211,7 @@ class GetLine:
 class Html:
     def __init__(self,img):
         height, width = img.shape[:2]
+        self.img= img
         self.threshold = int(((height+width)/2)*0.03)
         #self.threshold=30
         #print(self.threshold)
@@ -222,6 +224,18 @@ class Html:
         self.divList=[]#Front div id + size
         self.rectList=[]# Total pre div
 
+    def roi(self, img, minX, minY, maxX, maxY, color3=(255, 255, 255), color1=255):
+        vertices = np.array([[(minX, minY), (minX, maxY),
+                              (maxX, maxY), (maxX, minY)]], dtype=np.int32)
+        mask = np.zeros_like(img)
+        if len(img.shape) > 2:
+            color = color3
+        else:
+            color = color1
+        cv2.fillPoly(mask, vertices, color)
+        roiImg = cv2.bitwise_and(img, mask)
+        return roiImg
+
     def startHtml(self, html, css):#input file Name > html, css
         if html !=None:
             self.f.append(open("html/"+html+".html", "w"))
@@ -229,7 +243,7 @@ class Html:
         if css != None:
             self.f.append(open("html/"+css+".css", "w"))
             self.text += "<head><META HTTP-EQUIV=Expires CONTENT=Mon, 06 Jan 1990 00:00:01 GMT><META HTTP-EQUIV=Expires CONTENT=-1><META HTTP-EQUIV=Pragma CONTENT=no-cache><META HTTP-EQUIV=Cache-Control CONTENT=no-cache>\n"
-            self.text += "<link rel=stylesheet type=text/css href=" + css + ".css/>"
+            self.text += "<link rel=stylesheet type=text/css href=\"" + css + ".css\" />"
             self.text += "</head>\n"
             self.css=""
         self.text += "<body>\n"
@@ -254,11 +268,59 @@ class Html:
 
     def objectAppendStack(self,detectedObjects):
         layoutObjects=[]
+
+        for item in detectedObjects[0][1][0]:
+            ox1, oy1, ox2, oy2 = int(item[1][0]), int(item[1][1]), int(item[1][2]), int(item[1][3])
+            type= item[0]
+            for layoutItem in self.divList:
+                typeAndId=str(np.squeeze(layoutItem[0]))
+                lx1,ly1,lx2,ly2 =int(layoutItem[1][0]),int(layoutItem[1][1]),int(layoutItem[1][2]),int(layoutItem[1][3])
+                thresh = int((lx2-lx1) * 0.05)
+                lx1 = int(lx1 - thresh)
+                ly1 = int(ly1 - thresh)
+                thresh = int((ly2 - ly1) * 0.05)
+                lx2 = int(lx2 + thresh)
+                ly2 = int(ly2 + thresh)
+                if ox1>lx1 and oy1>ly1 and ox2<lx2 and oy2<ly2:
+                    if item[0] == "radioButtonV" or item[0] == "checkBoxV" or item[0] == "radioButtonH" or item[0] == "checkBoxH":  # v
+                        #roiImg = self.roi(self.img, ox1, oy1, ox2, oy2)
+                        roiImg = self.img[oy1: oy2, ox1: ox2]
+                        cv2.imwrite("html/" + item[0] + '.jpg', roiImg)
+                        returning = mser.mser(roiImg)
+                        print("검출 : ", returning)
+                        if (item[0] == "radioButtonV" or item[0] == "checkBoxV"):
+                            divide = int((oy2 - oy1) / returning)
+                            y1Value = oy1
+                            y2Value = oy1 + divide
+                            for i in range(0, int(returning)):
+                                #print(ox1, y1Value, ox2, y2Value)
+                                if (item[0] == "radioButtonV"):
+                                    type = "radioButton"
+                                elif (item[0] == "checkBoxV"):
+                                    type = "checkBox"
+                                layoutObjects.append([typeAndId, type, [ox1, y1Value, ox2, y2Value]])
+                                y1Value += divide
+                                y2Value += divide
+                        if (item[0] == "radioButtonH" or item[0] == "checkBoxH"):
+                            divide = int((oy2 - oy1) / returning)
+                            x1Value = ox1
+                            x2Value = ox1 + divide
+                            for i in range(0, int(returning)):
+                                #print(x1Value,oy1 , x2Value, oy2)
+                                if (item[0] == "radioButtonH"):
+                                    type = "radioButton"
+                                elif (item[0] == "checkBoxH"):
+                                    type = "checkBox"
+                                layoutObjects.append([typeAndId, type, [x1Value, oy1, x2Value, oy2]])
+                                x1Value += divide
+                                x2Value += divide
+                    else:
+                        layoutObjects.append([typeAndId,type,[ox1,oy1,ox2,oy2]])
+                    break
+
+        '''
         for objectItem in detectedObjects[0][1][0]:
-            if(objectItem[0]=="editText1" or objectItem[0]=="editText2" or objectItem[0]=="editText"):
-                type = "editText"
-            else:
-                type= objectItem[0]
+
             ox1,oy1,ox2,oy2 = int(objectItem[1][0]),int(objectItem[1][1]),int(objectItem[1][2]),int(objectItem[1][3])
             for layoutItem in self.divList:
                 typeAndId=str(np.squeeze(layoutItem[0]))
@@ -266,28 +328,43 @@ class Html:
                 if ox1>lx1 and oy1>ly1 and ox2<lx2 and oy2<ly2:
                     layoutObjects.append([typeAndId,type,[ox1,oy1,ox2,oy2]])
                     break
+        '''
+
+
         layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0])
         layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][1])
         layoutObjects = sorted(layoutObjects, key=lambda _line: _line[0])
         layoutObjects2= layoutObjects.copy()
         pre = None
         ip = 0
+
+        print("---------------------")
         for i, layoutObject in enumerate(layoutObjects):
+            print (layoutObject)
             if pre == None or pre[0] != layoutObject[0]:
-                pre = layoutObject
+                pass
             else:
-                if (abs(pre[2][1] - layoutObject[2][1]) > 10):# 위치 비교 후 br추가
+                if (abs(pre[2][1] - layoutObject[2][1]) > 18):# 위치 비교 후 br추가
                     layoutObjects2.insert(i + ip, [layoutObject[0], "<br>", None])
                     ip += 1
-
+            pre = layoutObject
+        print("---------------------")
         #layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0], reverse=True)
         layoutObjects2.reverse()
         for layoutObject in layoutObjects2:
             for i,stackItem in enumerate(self.htmlStack):
                 stackTypeAndId =stackItem[0]+str(stackItem[1])
                 if layoutObject[0]==stackTypeAndId and layoutObject[2] !=None:
+                    #print(layoutObject)
                     self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i+1)
-                    self.addCssList("#"+str(layoutObject[1])+str(self.objectNum[str(layoutObject[1])]),[{'margin':'10px'}])
+                    if(layoutObject[1]=="editText" or layoutObject[1]=="button"):
+                        self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
+                                        [{'margin': '10px'},
+                                         {'width': str(layoutObject[2][2] - layoutObject[2][0]) + 'px'},
+                                         {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},])
+                    else:
+                        self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
+                                        [{'margin': '10px'}])
                     self.objectNum[str(layoutObject[1])] += 1
                     break
                 elif layoutObject[0]==stackTypeAndId and layoutObject[2] ==None:
@@ -586,8 +663,8 @@ def main(image_src,htmlFileName,cssFileName):
     img_merged_lines = cv2.imread(image_src)
 
     # ----------find gradient
-    rowLines = getLine.limitGradient(merged_lines_all, 185, 175)#Limit degree 185~175
-    colLines = getLine.limitGradient(merged_lines_all,95,85)#Limit degree 95~85
+    rowLines = getLine.limitGradient(merged_lines_all, 190, 170)#Limit degree 185~175
+    colLines = getLine.limitGradient(merged_lines_all,100,80)#Limit degree 95~85
     rows=getLine.avgMapping(rowLines,0,img)
     cols=getLine.avgMapping(colLines,1,img)
 
@@ -602,8 +679,18 @@ def main(image_src,htmlFileName,cssFileName):
     #img_merged_lines = cv2.resize(img_merged_lines, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
 
     detectedObjects = test_frcnn.operation()
-    #detectedObjects = [[[0], [[['button', [496, 16, 608, 48]], ['button', [320, 16, 464, 48]], ['button', [528, 480, 656, 528]], ['button', [176, 16, 304, 48]], ['button', [16, 160, 112, 208]], ['button', [16, 16, 144, 64]], ['button', [544, 384, 656, 432]], ['button', [16, 256, 112, 288]], ['button', [16, 320, 112, 352]], ['button', [16, 96, 112, 144]], ['editText1', [528, 272, 704, 320]], ['editText', [512, 80, 704, 144]], ['editText', [528, 160, 704, 224]], ['radioButton', [176, 96, 320, 256]], ['text', [176, 257, 320, 259]], ['checkBox', [176, 368, 320, 560]]]]]]
-    #print(detectedObjects)
+    '''
+    detectedObjects = [[[0], [
+        [['radioButtonV', [544, 336, 704, 592]], ['editText', [304, 192, 480, 240]], ['editText', [512, 192, 720, 240]],
+         ['editText', [528, 256, 720, 304]], ['editText', [272, 128, 720, 176]], ['editText', [32, 192, 256, 224]],
+         ['editText', [32, 128, 256, 160]], ['editText', [32, 256, 256, 288]], ['checkBoxV', [336, 336, 480, 560]],
+         ['button', [592, 32, 688, 80]], ['button', [160, 32, 288, 64]], ['button', [448, 32, 544, 80]],
+         ['button', [320, 32, 432, 64]], ['text', [176, 320, 288, 368]], ['text', [192, 400, 288, 432]],
+         ['text', [176, 464, 288, 496]], ['text', [32, 464, 160, 496]], ['text', [32, 320, 144, 368]],
+         ['text', [32, 528, 160, 560]]]]]]
+    '''
+    #detectedObjects = [[[0], [[['radioButtonV', [352, 384, 464, 528]], ['editText', [192, 272, 368, 304]], ['editText', [176, 208, 368, 256]], ['editText', [16, 48, 224, 80]], ['editText', [176, 144, 368, 192]], ['editText', [288, 48, 528, 96]], ['checkBoxV', [176, 384, 288, 528]], ['button', [544, 48, 656, 96]], ['button', [384, 144, 464, 192]], ['button', [384, 208, 464, 256]]]]]]
+    print(detectedObjects)
     html.objectAppendStack(detectedObjects)
 
 
@@ -619,10 +706,10 @@ def main(image_src,htmlFileName,cssFileName):
     html.putHtml(tmp)
 
     html.endHtml()
-    #cv2.imwrite("html/" + 'layout.jpg',img_merged_lines)
+    cv2.imwrite("html/" + 'f.jpg',img_merged_lines)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 '''-------------------------main------------------------'''
 if __name__=='__main__':
-    main('images/image.jpg',"sketch2html_result", "sketch2html_result")
+    main('images/origin.jpg',"sketch2html_result", "sketch2html_result")
