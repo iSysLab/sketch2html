@@ -343,8 +343,8 @@ document.addEventListener("DOMContentLoaded", function(){
 	drawingApp.canvas.addEventListener("mouseup", listener, false);
 	drawingApp.canvas.addEventListener("mouseout", listener, false);
 	drawingApp.fileloader.addEventListener("change", fileOpen, false);
-  window.addEventListener("keypress", keylistener, false);
-  window.addEventListener("keydown", keylistener, false);
+	window.addEventListener("keypress", keylistener, false);
+	window.addEventListener("keydown", keylistener, false);
 	$('.color-buttons a').click(function() {drawingApp.changeColor($(this).text());});
   $('.size-buttons a').click(function() {drawingApp.changeSize($(this).text());});
   $('.tool-buttons a').click(function() {drawingApp.changeTool($(this).text());});
@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		var dataURL = drawingApp.canvas.toDataURL('image/jpeg');
 		var ts = new Date().getTime();
 		var html_filename;
-		var path = "../html/"
+		var path = "../html/";
 		$.ajax({
 			type: "POST",
 			url: "/send_img",
@@ -372,7 +372,9 @@ document.addEventListener("DOMContentLoaded", function(){
 				// reload output iframe
 				console.log("success");
 				$("#sendtoserver").attr('disabled',false);
-				$("#out_frame").attr("src", path);
+				var option = "height=600px, width=800px, top=0px, left=0px, toolbar=no, menubar=no, status=no, scrollbars=no, resizable=no";
+				window.open(path, "Result", option);
+				//$("#out_frame").attr("src", path);	//result output
 				$('.wrap-loading').addClass('display-none');
 			},
 			error: function(o){
@@ -380,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				$("#sendtoserver").attr('disabled',false);
 				$('.wrap-loading').addClass('display-none');
 			},
-			timeout: 60000, 		//timeout 60 seconds
+			timeout: 120000, 		//timeout 120 seconds
 		});
 	});
 });

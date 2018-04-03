@@ -1,0 +1,54 @@
+#canvasDiv{
+  cursor:url(../gui/cursor-fa-pencil.cur),auto;
+}
+
+#body{
+  margin-top: 100px;
+}
+
+#contents{
+  display: flex;
+}
+
+#canvas{
+  margin-right: 20px;
+}
+
+.fileUpload {
+    position: relative;
+    overflow: hidden;
+}
+
+#uploadBtn {             /*input tag 공통 스타일*/
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+
+.wrap-loading{ /*화면 전체를 어둡게 합니다.*/
+  position: fixed;
+  left:0;
+  right:0;
+  top:0;
+  bottom:0;
+  background: rgba(0,0,0,0.2); /*not in ie */
+  filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#20000000',endColorstr='#20000000');    /* ie */
+}
+
+.wrap-loading div{ /*로딩 이미지*/
+  position: fixed;
+  top:50%;
+  left:50%;
+  margin-left: -21px;
+  margin-top: -21px;
+}
+.display-none{ /*감추기*/
+  display:none;
+}
