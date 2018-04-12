@@ -2,9 +2,13 @@
 * Demo web application for converting a hand-drawn sketch 2 html code
 * The converting module is now actively being developed.
 
-## How to run
-* python app.py
-* Type http://127.0.0.1:5000 in chrome browser
+# How to run
+* $ pip install -r requirements.txt
+* $ python app.py
+* Open http://127.0.0.1:5000 in your web browser
 
-### excepted file
-model model_frcnn(b/c : file size > 100MB)
+# Model's Weights
+* You need the model's weights file to run
+* To train the model, run
+* $ model model_frcnn
+* [Pre-trained model file](https://goo.gl/J3NMsj) ( > 100MB)
