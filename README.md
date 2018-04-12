@@ -2,7 +2,11 @@
 * Demo web application for converting a hand-drawn sketch 2 html code
 * The converting module is now actively being developed.
 
+* Left: Sketch, Right: Auto-generated Web page
+ 
 ![](demo.jpg)
+
+* Auto-generated HTML code
 
 ```html
 <html>
