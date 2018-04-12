@@ -4,3 +4,4 @@ keras
 opencv-python
 pillow
 h5py
+flask
