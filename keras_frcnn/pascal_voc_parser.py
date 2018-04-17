@@ -11,7 +11,7 @@ def get_data(input_path):
 
 	visualise = False
 
-	data_paths = [os.path.join(input_path,'VOC2012')]
+	data_paths = [os.path.join(input_path,'trainingData')]
 	
 
 	print('Parsing annotation files')
@@ -37,7 +37,7 @@ def get_data(input_path):
 				for line in f:
 					test_files.append(line.strip() + '.jpg')
 		except Exception as e:
-			if data_path[-7:] == 'VOC2012':
+			if data_path[-7:] == 'trainingData':
 				# this is expected, most pascal voc distibutions dont have the test.txt file
 				pass
 			else:
