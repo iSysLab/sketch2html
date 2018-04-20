@@ -244,15 +244,18 @@ def operation():
                 # print(textLabel)
                 # print(real_x1, real_y1, real_x2, real_y2)
                 item.append([key, [real_x1, real_y1, real_x2, real_y2]])
-        # print(item)
+        print(all_dets)
         object.append([[idx], [item]])
+
     # print (object)
 
     # print('Elapsed time = {}'.format(time.time() - st))
-    # print(all_dets)
+	
     # cv2.imshow('img', img)
     # cv2.waitKey(0)
-    cv2.imwrite('./results_imgs/{}.png'.format(idx),img)
+        cv2.imwrite('./results_imgs/{}.png'.format(idx),img)
     print("=======================")
 
     return object
+if __name__=='__main__':
+    a= operation()
