@@ -7,7 +7,7 @@ import mser
 
 
 class LineMerge:
-    def get_lines(self,lines_in):
+    def get_lines(self, lines_in):
         if cv2.__version__ < '3.0':
             return lines_in[0]
         return [l[0] for l in lines_in]
@@ -67,7 +67,7 @@ class LineMerge:
 
         return super_lines_final
 
-    def merge_lines_segments1(self,lines, use_log=False):
+    def merge_lines_segments1(self, lines, use_log=False):
         if(len(lines) == 1):
             return lines[0]
         line_i = lines[0]
@@ -94,11 +94,11 @@ class LineMerge:
         return [points[0], points[len(points)-1]]
 
 
-    def lineMagnitude (self,x1, y1, x2, y2):
+    def lineMagnitude (self, x1, y1, x2, y2):
         lineMagnitude = math.sqrt(math.pow((x2 - x1), 2)+ math.pow((y2 - y1), 2))
         return lineMagnitude
 
-    def DistancePointLine(self,px, py, x1, y1, x2, y2):
+    def DistancePointLine(self, px, py, x1, y1, x2, y2):
         LineMag = self.lineMagnitude(x1, y1, x2, y2)
 
         if LineMag < 0.00000001:
@@ -125,7 +125,7 @@ class LineMerge:
 
         return DistancePointLine
 
-    def get_distance(self,line1, line2):
+    def get_distance(self, line1, line2):
         dist1 = self.DistancePointLine(line1[0][0], line1[0][1],
                                   line2[0][0], line2[0][1], line2[1][0], line2[1][1])
         dist2 = self.DistancePointLine(line1[1][0], line1[1][1],
@@ -136,7 +136,7 @@ class LineMerge:
                                   line1[0][0], line1[0][1], line1[1][0], line1[1][1])
         return min(dist1,dist2,dist3,dist4)
 
-    def mergeLine(self,img,lines):
+    def mergeLine(self, img, lines):
         # l[0] - line; l[1] - angle
         for line in self.get_lines(lines):
             leftx, boty, rightx, topy = line
@@ -175,7 +175,7 @@ class LineMerge:
         return merged_lines_all
 
 class GetLine:
-    def limitGradient(self,lines,maxG,minG):
+    def limitGradient(self, lines, maxG, minG):
         # row-----------------------------------------------------------------------------------------
         slope_degree = (np.arctan2(lines[:, 1] - lines[:, 3], lines[:, 0] - lines[:, 2]) * 180) / np.pi
         # limit 1
@@ -189,7 +189,8 @@ class GetLine:
 
         lines = lines[:, None]
         return lines
-    def avgMapping(self, lines, flag,img):
+
+    def avgMapping(self, lines, flag, img):
         height, width = img.shape[:2]
         #flag 1:row, 0:col
         if flag == 0:
@@ -209,9 +210,10 @@ class GetLine:
             return cols
 
 class Html:
-    def __init__(self,img):
+    def __init__(self, img):
         height, width = img.shape[:2]
-        self.img= img
+        self.img = img
+        self.originimg = None
         self.threshold = int(((height+width)/2)*0.03)
         #self.threshold=30
         #print(self.threshold)
@@ -248,13 +250,13 @@ class Html:
             self.css=""
         self.text += "<body>\n"
 
-    def putHtml(self,htmlText):
+    def putHtml(self, htmlText):
         self.text += htmlText
 
-    def putCss(self,cssText):
+    def putCss(self, cssText):
         self.css += cssText
 
-    def upObjectNum(self,type,num):
+    def upObjectNum(self, type, num):
         self.objectNum[type]+=num
 
     def endHtml(self):
@@ -266,7 +268,7 @@ class Html:
             self.f[len(self.f)-1].write(self.css)
             self.f[len(self.f)-1].close()
 
-    def objectAppendStack(self,detectedObjects):
+    def objectAppendStack(self, detectedObjects):
         layoutObjects=[]
 
         for item in detectedObjects[0][1][0]:
@@ -318,19 +320,6 @@ class Html:
                         layoutObjects.append([typeAndId,type,[ox1,oy1,ox2,oy2]])
                     break
 
-        '''
-        for objectItem in detectedObjects[0][1][0]:
-
-            ox1,oy1,ox2,oy2 = int(objectItem[1][0]),int(objectItem[1][1]),int(objectItem[1][2]),int(objectItem[1][3])
-            for layoutItem in self.divList:
-                typeAndId=str(np.squeeze(layoutItem[0]))
-                lx1,ly1,lx2,ly2 =int(layoutItem[1][0]),int(layoutItem[1][1]),int(layoutItem[1][2]),int(layoutItem[1][3])
-                if ox1>lx1 and oy1>ly1 and ox2<lx2 and oy2<ly2:
-                    layoutObjects.append([typeAndId,type,[ox1,oy1,ox2,oy2]])
-                    break
-        '''
-
-
         layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0])
         layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][1])
         layoutObjects = sorted(layoutObjects, key=lambda _line: _line[0])
@@ -352,11 +341,11 @@ class Html:
         #layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0], reverse=True)
         layoutObjects2.reverse()
         for layoutObject in layoutObjects2:
-            for i,stackItem in enumerate(self.htmlStack):
-                stackTypeAndId =stackItem[0]+str(stackItem[1])
-                if layoutObject[0]==stackTypeAndId and layoutObject[2] !=None:
-                    #print(layoutObject)
-                    self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i+1)
+            for i, stackItem in enumerate(self.htmlStack):
+                stackTypeAndId =stackItem[0] + str(stackItem[1])
+                if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
+                    print(layoutObject)
+                    self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i+1, layoutObject[2])
                     if(layoutObject[1]=="editText" or layoutObject[1]=="button"):
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
@@ -368,24 +357,24 @@ class Html:
                     self.objectNum[str(layoutObject[1])] += 1
                     break
                 elif layoutObject[0]==stackTypeAndId and layoutObject[2] ==None:
-                    self.addHtmlList(str(layoutObject[1]), None, None, i + 1)
+                    self.addHtmlList(str(layoutObject[1]), None, None, i + 1, layoutObject[2])
                     break
 
 
-    def mappingP(self, p,width,height):
+    def mappingP(self, p, width, height):
         if width != False:
             return (float(p) / float(width) * 100)
         elif height != False:
             return (float(p) / float(height) * 100)
 
-    def addHtmlList(self,type,id,FrontRear,inserting):
-        object = [type,id,FrontRear]
+    def addHtmlList(self, type, id, FrontRear, inserting, position = None):
+        object = [type , id, FrontRear, position]
         if inserting==False:
             self.htmlStack.append(object)
         else:
-            self.htmlStack.insert(inserting,object)
+            self.htmlStack.insert(inserting, object)
 
-    def addDivList(self,id, width, height, etc):
+    def addDivList(self, id, width, height, etc):
         div = collections.OrderedDict()
         div['id'] = id
         div['width'] = str(width)+"%"
@@ -407,7 +396,10 @@ class Html:
                     div[k] = v
         self.divCssStack.append(div)
 
-    def makeHtmlItem(self,htmlStackItem):
+    def setimg(self, path):
+        self.originimg = cv2.imread(path)
+
+    def makeHtmlItem(self, htmlStackItem):
         type= str(htmlStackItem[0])
         text = ""
         if(type=="div" and htmlStackItem[2]==True):
@@ -418,6 +410,14 @@ class Html:
             text+=" id=\""+type+str(htmlStackItem[1])
             text+="\">"+"\n"
         elif (type == "button" and htmlStackItem[2] == None):
+            button_img = im_trim(self.originimg, htmlStackItem[3])
+            button_img = cv2.cvtColor(button_img, cv2.COLOR_BGR2RGB)
+            //버튼이미지 색깔 판별
+
+
+            cv2.imshow('button_img', button_img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"button\""
@@ -455,7 +455,7 @@ class Html:
             text += htmlStackItem[0]+"\n"
         return text
 
-    def makeCssItem(self,cssStackItem):
+    def makeCssItem(self, cssStackItem):
         text = str(cssStackItem['id']) + "{\n"
         for k, v in cssStackItem.items():
             if k != "id" and k != "class":
@@ -463,7 +463,7 @@ class Html:
         text += "}\n"
         return text
 
-    def preventOverlap(self,rect):
+    def preventOverlap(self, rect):
         for rectL in self.rectList:
             if rect==rectL:
                 return False
@@ -584,7 +584,7 @@ class Html:
         if insertL==[[970, 260, 230, 386]]:
             print (str)
 
-    def makeRows(self,html,rows,cols,img,insertL,appendL):
+    def makeRows(self, html, rows, cols, img, insertL, appendL):
         th = self.threshold
         rows.insert(0,insertL)
         rows.append(appendL)
@@ -626,7 +626,7 @@ class Html:
                 madeRows.append([[tx1,ty1,bx2,by2],gaprow,None])
         self.makeCols(html,madeRows,cols,img,insertL,appendL)
 
-def roi(img,divList,color3=(255,255,255),color1=255):
+def roi(img, divList, color3=(255,255,255), color1=255):
     minX, minY,maxX,maxY = divList[1][0],divList[1][1],divList[1][2],divList[1][3]
     vertices = np.array([[(minX, minY), (minX, maxY),
                           (maxX, maxY), (maxX, minY)]], dtype=np.int32)
@@ -639,7 +639,14 @@ def roi(img,divList,color3=(255,255,255),color1=255):
     roiImg= cv2.bitwise_and(img,mask)
     return roiImg
 
-def main(image_src,htmlFileName,cssFileName):
+def im_trim (img, position):
+    x = position[0]; y = position[1];
+    w = position[2] - position[0]; h = position[3] - position[1];
+    img_trim = img[y:y+h, x:x+w]
+    cv2.imwrite("test", img_trim)
+    return img_trim
+
+def main(image_src, htmlFileName, cssFileName):
     #declare class
     lineMerge=LineMerge()
     getLine = GetLine()
@@ -648,20 +655,16 @@ def main(image_src,htmlFileName,cssFileName):
     img = origin
     #cv2.imshow('orginal',img)
     height,width = img.shape[:2]
-
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     #cv2.imwrite("html/" + 'f.jpg', gray)
     ret, edges = cv2.threshold(gray,127,255,cv2.THRESH_BINARY)
     edges = cv2.bitwise_not(edges)
     #cv2.imwrite("html/" + 'f.jpg',edges)
-
     lines = cv2.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=100,
                             minLineLength=100, maxLineGap=5)
-    merged_lines_all = lineMerge.mergeLine(img,lines)
-
+    merged_lines_all = lineMerge.mergeLine(img, lines)
 
     img_merged_lines = cv2.imread(image_src)
-
     # ----------find gradient
     rowLines = getLine.limitGradient(merged_lines_all, 190, 170)#Limit degree 185~175
     colLines = getLine.limitGradient(merged_lines_all,100,80)#Limit degree 95~85
@@ -671,6 +674,7 @@ def main(image_src,htmlFileName,cssFileName):
     ##############
 
     html = Html(img)
+    html.setimg(image_src)
     html.startHtml(htmlFileName, cssFileName)
     html.makeRows(html,rows,cols,img_merged_lines,[[0, 0, width, 0]],[[0, height, width, height]])
 
@@ -679,22 +683,11 @@ def main(image_src,htmlFileName,cssFileName):
     #img_merged_lines = cv2.resize(img_merged_lines, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
 
     detectedObjects = test_frcnn.operation()
-    '''
-    detectedObjects = [[[0], [
-        [['radioButtonV', [544, 336, 704, 592]], ['editText', [304, 192, 480, 240]], ['editText', [512, 192, 720, 240]],
-         ['editText', [528, 256, 720, 304]], ['editText', [272, 128, 720, 176]], ['editText', [32, 192, 256, 224]],
-         ['editText', [32, 128, 256, 160]], ['editText', [32, 256, 256, 288]], ['checkBoxV', [336, 336, 480, 560]],
-         ['button', [592, 32, 688, 80]], ['button', [160, 32, 288, 64]], ['button', [448, 32, 544, 80]],
-         ['button', [320, 32, 432, 64]], ['text', [176, 320, 288, 368]], ['text', [192, 400, 288, 432]],
-         ['text', [176, 464, 288, 496]], ['text', [32, 464, 160, 496]], ['text', [32, 320, 144, 368]],
-         ['text', [32, 528, 160, 560]]]]]]
-    '''
-    #detectedObjects = [[[0], [[['radioButtonV', [352, 384, 464, 528]], ['editText', [192, 272, 368, 304]], ['editText', [176, 208, 368, 256]], ['editText', [16, 48, 224, 80]], ['editText', [176, 144, 368, 192]], ['editText', [288, 48, 528, 96]], ['checkBoxV', [176, 384, 288, 528]], ['button', [544, 48, 656, 96]], ['button', [384, 144, 464, 192]], ['button', [384, 208, 464, 256]]]]]]
     print(detectedObjects)
     html.objectAppendStack(detectedObjects)
 
 
-    tmp=""
+    tmp = ""
     for i in html.divCssStack:
         tmp += html.makeCssItem(i)
     html.putCss(tmp)
