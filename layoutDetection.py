@@ -272,6 +272,18 @@ class Html:
             self.f[len(self.f)-1].write(self.css)
             self.f[len(self.f)-1].close()
 
+    def pxMapping(self,length, threshold):
+        result = int(length / threshold)
+        if result == 0:
+            return threshold
+        else:
+            rest = length % threshold
+            # print(rest)
+            if rest > (threshold / 2):
+                return result * threshold + threshold
+            else:
+                return result * threshold
+
     def objectAppendStack(self, detectedObjects):
         layoutObjects=[]
 
@@ -352,25 +364,31 @@ class Html:
                     findColorFunctoin = findColor.FindColor()
                     if layoutObject[1].lower() == "button":
                         ##find color
+
+                        width = self.pxMapping(layoutObject[2][2] - layoutObject[2][0],50)
+                        height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1]-20, 25)
+
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
                         btntext = pytesseract.image_to_string(roiImg, config="--psm 8")
                         color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
-                                         {'width': str(layoutObject[2][2] - layoutObject[2][0]) + 'px'},
-                                         {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},
+                                         {'width': str(width) + 'px'},
+                                         {'height': str(height) + 'px'},
                                          {'background-color': color},])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
                                          color, btntext)
 
                     elif layoutObject[1] == "editText":
                         ##find color
+                        width = self.pxMapping(layoutObject[2][2] - layoutObject[2][0] - 5, 100)
+                        height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1] - 20, 25)
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
                         border_color, focus_color = findColorFunctoin.run(roiImg, "editText")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
-                                         {'width': str(layoutObject[2][2] - layoutObject[2][0]) + 'px'},
-                                         {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},
+                                         {'width': str(width) + 'px'},
+                                         {'height': str(height) + 'px'},
                                          {'border': '3px solid ' + border_color},
                                          {'border-radius': '5px'}])
 
@@ -380,8 +398,7 @@ class Html:
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]) + ":hover",
                                         [{'border': '3px solid ' + focus_color}])
 
-                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
-                                         color)
+                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1)
 
                     else:
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
