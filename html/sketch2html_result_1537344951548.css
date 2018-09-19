@@ -1,0 +1,216 @@
+#div0{
+	width : 100.0%;
+	height : 30.5%;
+	margin : -1px;
+	border : 1px solid black;
+}
+#div1{
+	width : 24.4375%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div2{
+	width : 75.5625%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div3{
+	width : 100.0%;
+	height : 69.58333333333333%;
+	margin : -1px;
+	border : 1px solid black;
+}
+#div4{
+	width : 24.4375%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div5{
+	width : 75.5625%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#button0{
+	margin : 10px;
+	width : 288px;
+	height : 33px;
+	background-color : btn btn-success;
+}
+#button1{
+	margin : 10px;
+	width : 160px;
+	height : 33px;
+	background-color : btn btn-primary;
+}
+#editText0{
+	margin : 10px;
+	width : 176px;
+	height : 65px;
+	border : 3px solid #ff6666;
+	border-radius : 5px;
+}
+#editText0:focus{
+	border : 3px solid red;
+}
+#editText0:hover{
+	border : 3px solid red;
+}
+#editText1{
+	margin : 10px;
+	width : 208px;
+	height : 49px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText1:focus{
+	border : 3px solid none;
+}
+#editText1:hover{
+	border : 3px solid none;
+}
+#editText2{
+	margin : 10px;
+	width : 160px;
+	height : 49px;
+	border : 3px solid #66b3ff;
+	border-radius : 5px;
+}
+#editText2:focus{
+	border : 3px solid blue;
+}
+#editText2:hover{
+	border : 3px solid blue;
+}
+#editText3{
+	margin : 10px;
+	width : 192px;
+	height : 49px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText3:focus{
+	border : 3px solid none;
+}
+#editText3:hover{
+	border : 3px solid none;
+}
+#text0{
+	margin : 10px;
+}
+#editText4{
+	margin : 10px;
+	width : 192px;
+	height : 49px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText4:focus{
+	border : 3px solid none;
+}
+#editText4:hover{
+	border : 3px solid none;
+}
+#text1{
+	margin : 10px;
+}
+#editText5{
+	margin : 10px;
+	width : 160px;
+	height : 17px;
+	border : 3px solid #ffeb99;
+	border-radius : 5px;
+}
+#editText5:focus{
+	border : 3px solid orange;
+}
+#editText5:hover{
+	border : 3px solid orange;
+}
+#button2{
+	margin : 10px;
+	width : 160px;
+	height : 33px;
+	background-color : btn btn-warning;
+}
+#editText6{
+	margin : 10px;
+	width : 176px;
+	height : 33px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText6:focus{
+	border : 3px solid none;
+}
+#editText6:hover{
+	border : 3px solid none;
+}
+#editText7{
+	margin : 10px;
+	width : 176px;
+	height : 33px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText7:focus{
+	border : 3px solid none;
+}
+#editText7:hover{
+	border : 3px solid none;
+}
+#editText8{
+	margin : 10px;
+	width : 160px;
+	height : 49px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText8:focus{
+	border : 3px solid none;
+}
+#editText8:hover{
+	border : 3px solid none;
+}
+#editText9{
+	margin : 10px;
+	width : 160px;
+	height : 33px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText9:focus{
+	border : 3px solid none;
+}
+#editText9:hover{
+	border : 3px solid none;
+}
+#editText10{
+	margin : 10px;
+	width : 176px;
+	height : 33px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText10:focus{
+	border : 3px solid none;
+}
+#editText10:hover{
+	border : 3px solid none;
+}
+#text2{
+	margin : 10px;
+}
+#button3{
+	margin : 10px;
+	width : 112px;
+	height : 49px;
+	background-color : btn btn-danger;
+}

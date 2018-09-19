@@ -347,16 +347,12 @@ class Html:
             for i, stackItem in enumerate(self.htmlStack):
                 stackTypeAndId =stackItem[0] + str(stackItem[1])
                 if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
-                    print(layoutObject)
-                    if(layoutObject[1]=="editText" or layoutObject[1]=="button"):
-
+                    # print(layoutObject)
+                    findColorFunctoin = findColor.FindColor()
+                    if layoutObject[1].lower() == "button":
                         ##find color
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
-                        findColorFunctoin = findColor.FindColor()
-                        color= findColorFunctoin.run(roiImg)
-                        #print(color)
-                        ##
-
+                        color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
                                          {'width': str(layoutObject[2][2] - layoutObject[2][0]) + 'px'},
@@ -364,17 +360,36 @@ class Html:
                                          {'background-color': color},])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
                                          color)
+
+                    elif layoutObject[1] == "editText":
+                        ##find color
+                        roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
+                        border_color, focus_color = findColorFunctoin.run(roiImg, "editText")
+                        self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
+                                        [{'margin': '10px'},
+                                         {'width': str(layoutObject[2][2] - layoutObject[2][0]) + 'px'},
+                                         {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},
+                                         {'border': '3px solid ' + border_color},
+                                         {'border-radius': '5px'}])
+
+                        self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]) + ":focus",
+                                        [{'border': '3px solid ' + focus_color}])
+
+                        self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]) + ":hover",
+                                        [{'border': '3px solid ' + focus_color}])
+
+                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
+                                         color)
+
                     else:
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'}])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
                                          None)
-
-
                     self.objectNum[str(layoutObject[1])] += 1
 
                     break
-                elif layoutObject[0]==stackTypeAndId and layoutObject[2] ==None:
+                elif layoutObject[0]==stackTypeAndId and layoutObject[2] == None:
                     self.addHtmlList(str(layoutObject[1]), None, None, i + 1, None)
                     break
 

@@ -13,7 +13,7 @@ class FindColor():
         self.lower_yellow = np.array([25, 200, 200])  # yellow
         self.upper_yellow = np.array([35, 255, 255])
 
-        self.lower_green = np.array([55, 200, 125])  # green
+        self.lower_green = np.array([55, 100, 60])  # green
         self.upper_green = np.array([65, 255, 135])
 
         self.lower_black = np.array([0, 0, 0])  # black
@@ -21,24 +21,32 @@ class FindColor():
 
         self.img=None
 
-    def run(self,img):
+    def run(self, img, wedget):
         self.img = img
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         redValue, redContour = self.detector(hsv, self.lower_red, self.upper_red)
         blueValue, blueContour = self.detector(hsv, self.lower_blue, self.upper_blue)
         yellowValue, yellowContour = self.detector(hsv, self.lower_yellow, self.upper_yellow)
         greenValue, greenContour = self.detector(hsv, self.lower_green, self.upper_green)
-        #blackValue, blackContour = self.detector(hsv, self.lower_black, self.upper_black)
-        d = {'btn btn-danger':redValue,'btn btn-primary':blueValue,'btn btn-warning':yellowValue,'btn btn-success':greenValue}
-        result = max(d.keys(), key=lambda x: d[x])
-        print(d)
-        if d[result]>100:
-            print (result)
-            return result
+        # blackValue, blackContour = self.detector(hsv, self.lower_black, self.upper_black)
+        if wedget == "button":
+            d = {'btn btn-danger':redValue,'btn btn-primary':blueValue,'btn btn-warning':yellowValue,'btn btn-success':greenValue}
+            background_color = max(d.keys(), key=lambda x: d[x])
+            if d[background_color]>100:
+                return background_color
+            else:
+                return "none"
         else:
-            return "none"
+            d = {'#ff6666':redValue,'#0099ff':blueValue,'#ffeb99':yellowValue,'#33cc33':greenValue}
+            d_ = {'red':redValue,'blue':blueValue,'orange':yellowValue,'#009933':greenValue}
+            border_color = max(d.keys(), key=lambda x: d[x])
+            focus_color = max(d_.keys(), key=lambda x: d_[x])
+            if d[border_color]>100:
+                return border_color, focus_color
+            else:
+                return "none", "none"
 
-    def detector(self,hsv,lower,upper):
+    def detector(self, hsv, lower, upper):
         mask = cv2.inRange(hsv, lower, upper)
         element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         mask = cv2.erode(mask, element, iterations=1)
