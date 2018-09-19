@@ -4,7 +4,7 @@ import numpy as np
 import collections
 import test_frcnn
 import mser
-
+import findColor
 
 class LineMerge:
     def get_lines(self, lines_in):
@@ -140,7 +140,7 @@ class LineMerge:
         # l[0] - line; l[1] - angle
         for line in self.get_lines(lines):
             leftx, boty, rightx, topy = line
-            cv2.line(img, (leftx, boty), (rightx, topy), (0, 0, 255), 1)
+            #cv2.line(img, (leftx, boty), (rightx, topy), (0, 0, 255), 1)
         # cv2.imshow("lines", img)
         # -------------prepare
         _lines = []
@@ -289,7 +289,7 @@ class Html:
                         roiImg = self.img[oy1: oy2, ox1: ox2]
                         cv2.imwrite("html/" + item[0] + '.jpg', roiImg)
                         returning = mser.mser(roiImg)
-                        print("검출 : ", returning)
+                        #print("검출 : ", returning)
                         if (item[0] == "radioButtonV" or item[0] == "checkBoxV"):
                             divide = int((oy2 - oy1) / returning)
                             y1Value = oy1
@@ -345,19 +345,34 @@ class Html:
                 stackTypeAndId =stackItem[0] + str(stackItem[1])
                 if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
                     print(layoutObject)
-                    self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i+1, layoutObject[2])
                     if(layoutObject[1]=="editText" or layoutObject[1]=="button"):
+
+                        ##find color
+                        roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
+                        findColorFunctoin = findColor.FindColor()
+                        color= findColorFunctoin.run(roiImg)
+                        #print(color)
+                        ##
+
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
                                          {'width': str(layoutObject[2][2] - layoutObject[2][0]) + 'px'},
-                                         {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},])
+                                         {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},
+                                         {'background-color': color},])
+                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
+                                         color)
                     else:
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'}])
+                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
+                                         None)
+
+
                     self.objectNum[str(layoutObject[1])] += 1
+
                     break
                 elif layoutObject[0]==stackTypeAndId and layoutObject[2] ==None:
-                    self.addHtmlList(str(layoutObject[1]), None, None, i + 1, layoutObject[2])
+                    self.addHtmlList(str(layoutObject[1]), None, None, i + 1, None)
                     break
 
 
@@ -367,8 +382,8 @@ class Html:
         elif height != False:
             return (float(p) / float(height) * 100)
 
-    def addHtmlList(self, type, id, FrontRear, inserting, position = None):
-        object = [type , id, FrontRear, position]
+    def addHtmlList(self, type, id, FrontRear, inserting, color=None):
+        object = [type , id, FrontRear, color]
         if inserting==False:
             self.htmlStack.append(object)
         else:
@@ -410,14 +425,9 @@ class Html:
             text+=" id=\""+type+str(htmlStackItem[1])
             text+="\">"+"\n"
         elif (type == "button" and htmlStackItem[2] == None):
-            button_img = im_trim(self.originimg, htmlStackItem[3])
-            button_img = cv2.cvtColor(button_img, cv2.COLOR_BGR2RGB)
-            //버튼이미지 색깔 판별
 
+            print("color:",htmlStackItem[3])# return color name
 
-            cv2.imshow('button_img', button_img)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"button\""
@@ -643,7 +653,7 @@ def im_trim (img, position):
     x = position[0]; y = position[1];
     w = position[2] - position[0]; h = position[3] - position[1];
     img_trim = img[y:y+h, x:x+w]
-    cv2.imwrite("test", img_trim)
+    cv2.imwrite("test.JPG", img_trim)
     return img_trim
 
 def main(image_src, htmlFileName, cssFileName):
@@ -661,7 +671,7 @@ def main(image_src, htmlFileName, cssFileName):
     edges = cv2.bitwise_not(edges)
     #cv2.imwrite("html/" + 'f.jpg',edges)
     lines = cv2.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=100,
-                            minLineLength=100, maxLineGap=5)
+                            minLineLength=50, maxLineGap=5)
     merged_lines_all = lineMerge.mergeLine(img, lines)
 
     img_merged_lines = cv2.imread(image_src)
