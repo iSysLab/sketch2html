@@ -5,6 +5,7 @@ import collections
 import test_frcnn
 import mser
 import findColor
+import pytesseract
 
 class LineMerge:
     def get_lines(self, lines_in):
@@ -352,6 +353,7 @@ class Html:
                     if layoutObject[1].lower() == "button":
                         ##find color
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
+                        btntext = pytesseract.image_to_string(roiImg, config="--psm 8")
                         color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
@@ -359,7 +361,7 @@ class Html:
                                          {'height': str(layoutObject[2][3] - layoutObject[2][1]-15) + 'px'},
                                          {'background-color': color},])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
-                                         color)
+                                         color, btntext)
 
                     elif layoutObject[1] == "editText":
                         ##find color
@@ -400,8 +402,8 @@ class Html:
         elif height != False:
             return (float(p) / float(height) * 100)
 
-    def addHtmlList(self, type, id, FrontRear, inserting, color=None):
-        object = [type , id, FrontRear, color]
+    def addHtmlList(self, type, id, FrontRear, inserting, color = None, text = None):
+        object = [type , id, FrontRear, color, text]
         if inserting==False:
             self.htmlStack.append(object)
         else:
@@ -444,12 +446,15 @@ class Html:
             text+="\">"+"\n"
         elif (type == "button" and htmlStackItem[2] == None):
             color = htmlStackItem[3]
+            btntext = htmlStackItem[4]
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<button type=\"button\" "
             text += "class = \"" + color + "\""
             text += " id=\"" + type + str(htmlStackItem[1])+"\""
-            text += ">Button</button>\n"
+            text += ">"
+            text += btntext
+            text += "</button>\n"
         elif (type == "checkBox" and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"

@@ -1,0 +1,126 @@
+#div0{
+	width : 100.0%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+}
+#div1{
+	width : 22.0%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#div2{
+	width : 78.0%;
+	height : 100.0%;
+	margin : -1px;
+	border : 1px solid black;
+	float : left;
+}
+#button0{
+	margin : 10px;
+	width : 144px;
+	height : 33px;
+	background-color : none;
+}
+#checkBox0{
+	margin : 10px;
+}
+#editText0{
+	margin : 10px;
+	width : 352px;
+	height : 17px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText0:focus{
+	border : 3px solid none;
+}
+#editText0:hover{
+	border : 3px solid none;
+}
+#checkBox1{
+	margin : 10px;
+}
+#checkBox2{
+	margin : 10px;
+}
+#editText1{
+	margin : 10px;
+	width : 336px;
+	height : 33px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText1:focus{
+	border : 3px solid none;
+}
+#editText1:hover{
+	border : 3px solid none;
+}
+#radioButton0{
+	margin : 10px;
+}
+#editText2{
+	margin : 10px;
+	width : 272px;
+	height : 17px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText2:focus{
+	border : 3px solid none;
+}
+#editText2:hover{
+	border : 3px solid none;
+}
+#radioButton1{
+	margin : 10px;
+}
+#radioButton2{
+	margin : 10px;
+}
+#editText3{
+	margin : 10px;
+	width : 288px;
+	height : 17px;
+	border : 3px solid none;
+	border-radius : 5px;
+}
+#editText3:focus{
+	border : 3px solid none;
+}
+#editText3:hover{
+	border : 3px solid none;
+}
+#button1{
+	margin : 10px;
+	width : 144px;
+	height : 17px;
+	background-color : none;
+}
+#button2{
+	margin : 10px;
+	width : 128px;
+	height : 17px;
+	background-color : none;
+}
+#button3{
+	margin : 10px;
+	width : 128px;
+	height : 17px;
+	background-color : none;
+}
+#button4{
+	margin : 10px;
+	width : 128px;
+	height : 33px;
+	background-color : none;
+}
+#button5{
+	margin : 10px;
+	width : 128px;
+	height : 17px;
+	background-color : none;
+}
