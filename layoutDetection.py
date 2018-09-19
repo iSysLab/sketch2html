@@ -245,7 +245,10 @@ class Html:
         if css != None:
             self.f.append(open("html/"+css+".css", "w"))
             self.text += "<head><META HTTP-EQUIV=Expires CONTENT=Mon, 06 Jan 1990 00:00:01 GMT><META HTTP-EQUIV=Expires CONTENT=-1><META HTTP-EQUIV=Pragma CONTENT=no-cache><META HTTP-EQUIV=Cache-Control CONTENT=no-cache>\n"
-            self.text += "<link rel=stylesheet type=text/css href=\"" + css + ".css\" />"
+            self.text += "<link rel=stylesheet type=text/css href=\"" + css + ".css\" />\n"
+            self.text += "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\">\n"
+            self.text += "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>\n"
+            self.text += "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n"
             self.text += "</head>\n"
             self.css=""
         self.text += "<body>\n"
@@ -425,15 +428,13 @@ class Html:
             text+=" id=\""+type+str(htmlStackItem[1])
             text+="\">"+"\n"
         elif (type == "button" and htmlStackItem[2] == None):
-
-            print("color:",htmlStackItem[3])# return color name
-
+            color = htmlStackItem[3]
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
-            text += "<input type=\"button\""
+            text += "<button type=\"button\" "
+            text += "class = \"" + color + "\""
             text += " id=\"" + type + str(htmlStackItem[1])+"\""
-            text += " value=\"button"
-            text += "\"/>" + "\n"
+            text += ">Button</button>\n"
         elif (type == "checkBox" and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
