@@ -28,11 +28,12 @@ class FindColor():
         blueValue, blueContour = self.detector(hsv, self.lower_blue, self.upper_blue)
         yellowValue, yellowContour = self.detector(hsv, self.lower_yellow, self.upper_yellow)
         greenValue, greenContour = self.detector(hsv, self.lower_green, self.upper_green)
-        blackValue, blackContour = self.detector(hsv, self.lower_black, self.upper_black)
+        #blackValue, blackContour = self.detector(hsv, self.lower_black, self.upper_black)
         d = {'btn btn-danger':redValue,'btn btn-primary':blueValue,'btn btn-warning':yellowValue,'btn btn-success':greenValue}
         result = max(d.keys(), key=lambda x: d[x])
         print(d)
         if d[result]>100:
+            print (result)
             return result
         else:
             return "none"
@@ -53,18 +54,19 @@ class FindColor():
             if currentArea > maximumArea:
                 bestContour = contour
                 maximumArea = currentArea
-                proposalContour.append(contour)#번호판으로 추정되는 제안 영역
-
+                proposalContour.append(contour)# 검출로 판단되는 제안 영역
         return maximumArea,bestContour
 
-    def paint(self,bestContour):
+'''
+    def paint(self,bestContour):# 검출영역 그리기
         x, y, w, h = cv2.boundingRect(bestContour)
         cv2.rectangle(self.img, (x, y), (x + w, y + h), (255, 0, 0), 2)
         #cv2.imshow("Frame", self.img)
         cv2.imwrite('redr.jpg', self.img)
+'''
 
 if __name__ =='__main__':
-    img = cv2.imread("red.PNG")
+    img = cv2.imread("images/origin.jpg")
     FindColor = FindColor()
 
     returnValue=FindColor.run(img)
