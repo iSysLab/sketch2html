@@ -354,7 +354,7 @@ class Html:
                     if layoutObject[1].lower() == "button":
                         ##find color
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
-                        btntext = cleanText(pytesseract.image_to_string(roiImg, config="--psm 8"))
+                        btntext = cleanText(pytesseract.image_to_string(roiImg, config="--psm 8 --oem 1"))
                         color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},

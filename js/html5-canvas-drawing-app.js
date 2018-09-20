@@ -373,8 +373,8 @@ document.addEventListener("DOMContentLoaded", function(){
 				console.log("success");
 				$("#sendtoserver").attr('disabled',false);
 				var option = "height=600px, width=800px, top=0px, left=0px, toolbar=no, menubar=no, status=no, scrollbars=no, resizable=no";
-				window.open(path, "Result", option);
-				//$("#out_frame").attr("src", path);	//result output
+				// window.open(path, "Result", option);	//result window open
+				$("#out_frame").attr("src", path);	//result output
 				$('.wrap-loading').addClass('display-none');
 			},
 			error: function(o){
