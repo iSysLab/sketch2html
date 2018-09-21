@@ -1,4 +1,5 @@
 import numpy as np
+from PIL import Image
 
 class Generator:
     def __init__(self):
