@@ -212,10 +212,11 @@ class GetLine:
             return cols
 
 class Html:
-    def __init__(self, img):
-        height, width = img.shape[:2]
-        self.img = img
-        self.originimg = None
+    def __init__(self, image):
+        height, width = image.shape[:2]
+        self.img = image
+        cv2.imwrite('onlyTextimg.jpg', self.img)
+        self.onlyTextimg = cv2.imread('onlyTextimg.jpg')
         self.threshold = int(((height+width)/2)*0.03)
         #self.threshold=30
         #print(self.threshold)
@@ -273,15 +274,35 @@ class Html:
             self.f[len(self.f)-1].write(self.css)
             self.f[len(self.f)-1].close()
 
+    def im_trim(self, img, layoutObject):
+        offset = 6
+        x1 = layoutObject[2][0] - offset; y1 = layoutObject[2][1] - offset;
+        x2 = layoutObject[2][2] + offset; y2 = layoutObject[2][3] + offset;
+        if x1 < 0:
+            x1 = 0
+        elif y1 < 0:
+            y1 = 0
+        elif x2 > img.shape[1]:
+            x2 = img.shape[1]
+        elif y2 > img.shape[0]:
+            y2 = img.shape[0]
+        w = x2 - x1;
+        h = y2 - y1;
+        if layoutObject[1].lower() != "text":
+            img = cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), -1)
+            cv2.imwrite("onlyTextimg.jpg", img)
+        x1 = x1 + offset; y1 = y1 + offset;
+        x2 = x2 - offset; y2 = y2 - offset;
+        return img
+
     def objectAppendStack(self, detectedObjects):
         layoutObjects=[]
-
         for item in detectedObjects[0][1][0]:
             ox1, oy1, ox2, oy2 = int(item[1][0]), int(item[1][1]), int(item[1][2]), int(item[1][3])
-            type= item[0]
+            type = item[0]
             for layoutItem in self.divList:
-                typeAndId=str(np.squeeze(layoutItem[0]))
-                lx1,ly1,lx2,ly2 =int(layoutItem[1][0]),int(layoutItem[1][1]),int(layoutItem[1][2]),int(layoutItem[1][3])
+                typeAndId = str(np.squeeze(layoutItem[0]))
+                lx1, ly1, lx2, ly2 =int(layoutItem[1][0]), int(layoutItem[1][1]), int(layoutItem[1][2]), int(layoutItem[1][3])
                 thresh = int((lx2-lx1) * 0.05)
                 lx1 = int(lx1 - thresh)
                 ly1 = int(ly1 - thresh)
@@ -292,7 +313,6 @@ class Html:
                     if item[0] == "radioButtonV" or item[0] == "checkBoxV" or item[0] == "radioButtonH" or item[0] == "checkBoxH":  # v
                         #roiImg = self.roi(self.img, ox1, oy1, ox2, oy2)
                         roiImg = self.img[oy1: oy2, ox1: ox2]
-                        cv2.imwrite("html/" + item[0] + '.jpg', roiImg)
                         returning = mser.mser(roiImg)
                         #print("검출 : ", returning)
                         if (item[0] == "radioButtonV" or item[0] == "checkBoxV"):
@@ -344,17 +364,30 @@ class Html:
             pre = layoutObject
         print("---------------------")
         #layoutObjects = sorted(layoutObjects, key=lambda _line: _line[2][0], reverse=True)
+
+        #type이 글씨를 제외한 영역을 추출, 이미지에서 추출한 영역을 지워버린다.
         layoutObjects2.reverse()
+        # for layoutObject in layoutObjects2:
+        #     for i, stackItem in enumerate(self.htmlStack):
+        #         stackTypeAndId = stackItem[0] + str(stackItem[1])
+        #         if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
+        #             if layoutObject[1].lower() != "text":
+        #                 self.onlyTextimg = self.im_trim(self.onlyTextimg, layoutObject)
+
         for layoutObject in layoutObjects2:
             for i, stackItem in enumerate(self.htmlStack):
-                stackTypeAndId =stackItem[0] + str(stackItem[1])
+                stackTypeAndId = stackItem[0] + str(stackItem[1])
                 if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
                     # print(layoutObject)
+                    if layoutObject[1].lower() != "text":
+                        self.onlyTextimg = self.im_trim(self.onlyTextimg, layoutObject)
+                    else:
+                        continue
                     findColorFunctoin = findColor.FindColor()
                     if layoutObject[1].lower() == "button":
                         ##find color
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],layoutObject[2][0]: layoutObject[2][2]]
-                        btntext = cleanText(pytesseract.image_to_string(roiImg, config="--psm 8 --oem 1"))
+                        btntext = cleanText(pytesseract.image_to_string(roiImg, config="--psm 11 --oem 1"))
                         color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
@@ -394,7 +427,6 @@ class Html:
                     self.addHtmlList(str(layoutObject[1]), None, None, i + 1, None)
                     break
 
-
     def mappingP(self, p, width, height):
         if width != False:
             return (float(p) / float(width) * 100)
@@ -429,9 +461,6 @@ class Html:
                 for k, v in dict.items():
                     div[k] = v
         self.divCssStack.append(div)
-
-    def setimg(self, path):
-        self.originimg = cv2.imread(path)
 
     def makeHtmlItem(self, htmlStackItem):
         type= str(htmlStackItem[0])
@@ -669,13 +698,6 @@ def roi(img, divList, color3=(255,255,255), color1=255):
     roiImg= cv2.bitwise_and(img,mask)
     return roiImg
 
-def im_trim (img, position):
-    x = position[0]; y = position[1];
-    w = position[2] - position[0]; h = position[3] - position[1];
-    img_trim = img[y:y+h, x:x+w]
-    cv2.imwrite("test.JPG", img_trim)
-    return img_trim
-
 def cleanText(origin_text):
     text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', origin_text)
     return text
@@ -708,7 +730,6 @@ def main(image_src, htmlFileName, cssFileName):
     ##############
 
     html = Html(img)
-    html.setimg(image_src)
     html.startHtml(htmlFileName, cssFileName)
     html.makeRows(html,rows,cols,img_merged_lines,[[0, 0, width, 0]],[[0, height, width, height]])
 
@@ -733,7 +754,7 @@ def main(image_src, htmlFileName, cssFileName):
     html.putHtml(tmp)
 
     html.endHtml()
-    cv2.imwrite("html/" + 'f.jpg',img_merged_lines)
+    # cv2.imwrite("html/" + 'merge.jpg',img_merged_lines)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
