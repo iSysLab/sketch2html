@@ -381,8 +381,8 @@ class Html:
                     # print(layoutObject)
                     if layoutObject[1].lower() != "text":
                         self.onlyTextimg = self.im_trim(self.onlyTextimg, layoutObject)
-                    else:
-                        continue
+                    # else:
+                    #     continue
                     findColorFunctoin = findColor.FindColor()
                     if layoutObject[1].lower() == "button":
                         ##find color
