@@ -8,13 +8,12 @@ class ImageMerge:
         self.newImage = Image.new("RGB", (800, 600), (256, 256, 256))
     def merge(self,dir,saveDir,fileName):
         x1=0
-
         target_dir = dir
         files = glob.glob(target_dir + "*.*")
         y = Image.open(files[0])
         x = y.size[0]
         y = y.size[1]
-
+        positionList=[]
         for index in range(len(files)):
             image = Image.open(files[index])
             self.maxX += x
@@ -26,11 +25,20 @@ class ImageMerge:
             y1 = 0 + self.addY
             x2 = x * (index + 1) - self.resetX
             y2 = y + self.addY
+            if y2> 600:
+                #print(index)
+                break
             #print(x1, y1, x2, y2)
             area = (x1, y1, x2, y2)  # (x1,y1,x2,y2)순서
+            positionList.append([x1, y1, x2, y2])
             self.newImage.paste(image, area)
-        self.newImage.save(saveDir+fileName, "PNG")
+        self.newImage.save(saveDir+fileName+".png", "PNG")
+
+        return fileName,positionList
 
 if __name__=='__main__':
     imgMerge= ImageMerge()
-    imgMerge.merge("./warehouse/preview/", "./warehouse/", "result.png")
+    fileName,position = imgMerge.merge("./warehouse/preview/", "./warehouse/", "result")
+
+    print(fileName)
+    print(position)
