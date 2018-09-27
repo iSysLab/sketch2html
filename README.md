@@ -15,28 +15,28 @@
 <body>
 	<div id="div0">
 	text
-	<input type="text" id="editText3""/>
+	<input type="text" id="editText3"/>
 	<input type="button" id="button3" value="button"/>
 	<input type="button" id="button2" value="button"/>
 	</div>
 	<div id="div1">
 		<div id="div2">
-		<input type="checkbox" id="checkBox3""/><label> check
+		<input type="checkbox" id="checkBox3"/><label> check
 		<br>
-		<input type="checkbox" id="checkBox2""/><label> check
+		<input type="checkbox" id="checkBox2"/><label> check
 		<br>
-		<input type="checkbox" id="checkBox1""/><label> check
+		<input type="checkbox" id="checkBox1"/><label> check
 		<br>
-		<input type="checkbox" id="checkBox0""/><label> check
+		<input type="checkbox" id="checkBox0"/><label> check
 		<br>
 		<input type="button" id="button1" value="button"/>
 		</div>
 		<div id="div3">
-		<input type="text" id="editText2""/>
+		<input type="text" id="editText2"/>
 		<br>
-		<input type="text" id="editText1""/>
+		<input type="text" id="editText1"/>
 		<br>
-		<input type="text" id="editText0""/>
+		<input type="text" id="editText0"/>
 		<br>
 		<input type="button" id="button0" value="button"/>
 		</div>
