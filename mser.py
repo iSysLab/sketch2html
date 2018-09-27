@@ -44,8 +44,8 @@ def cleanText(origin_text):
     text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', origin_text)
     return text
 
-def textMser(img_path):
-    img = cv2.imread(img_path)
+def textMser(img, mode = "details", offset = 10):
+    img = cv2.imread(img)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #Converting to GrayScale
     text = cleanText(pytesseract.image_to_boxes(gray, config="--psm 11 --oem 1"))
     text = text.split("\n")
@@ -53,21 +53,32 @@ def textMser(img_path):
     for m in text:
         array.append(m.split(" "))
 
-    # for index in range(len(array)):
-    #     offset = 10
-    #     if index < len(array) - 1 and abs(int(array[index][2]) - int(array[index + 1][2])) <= offset and abs(int(array[index][3]) - int(array[index + 1][1])) <= 2 * offset:
-    #         str = array[index][0] + array[index + 1][0]
-    #         temp = [str, array[index][1], array[index][2], array[index + 1][3], array[index + 1][4]]
-    #         array[index] = temp
-    #         for m in range(index + 1, len(array)):
-    #             if m < len(array) - 1:
-    #                 array[m] = array[m + 1]
-    #         index = 0
-    print(array)
+    index = 0
+    if mode.lower() == "details":
+        while index < len(array):
+            offset = 10
+            if index < len(array) - 1 and abs(int(array[index][2]) - int(array[index + 1][2])) <= offset and abs(int(array[index][3]) - int(array[index + 1][1])) <= 2 * offset:
+                str = array[index][0] + array[index + 1][0]
+                temp = [str, array[index][1], array[index][2], array[index + 1][3], array[index + 1][4]]
+                array[index] = temp
+                array.pop(index + 1)
+                index -= 1
+            index += 1
+    elif mode.lower() == "simple":
+        while index < len(array):
+            offset = 10
+            if index < len(array) - 1 and abs(int(array[index][2]) - int(array[index + 1][2])) <= offset and abs(int(array[index][3]) - int(array[index + 1][1])) <= 2 * offset:
+                str = "text"
+                temp = [str, array[index][1], array[index][2], array[index + 1][3], array[index + 1][4]]
+                array[index] = temp
+                array.pop(index + 1)
+                index -= 1
+            index += 1
+    return array
 
 if __name__=='__main__':
     # origin = cv2.imread("./html/radioButtonV.jpg")
     # returning = mser(origin)
     # print("검출 : ", returning)
 
-    textMser('onlyTextimg.jpg')
+    textMser('onlyTextimg.jpg', "simple")

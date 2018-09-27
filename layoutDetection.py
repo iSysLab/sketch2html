@@ -317,6 +317,10 @@ class Html:
             if item[0].lower() != "text":
                 self.onlyTextimg = self.im_trim(self.onlyTextimg, item)
         layoutObjects = []
+        textarray = mser.textMser(self.onlyTextimg, "simple")
+        # for text in textarray:
+        #     detectedObjects[0][1][0].append(text)
+        # print("testeee", detectedObjects[0][1][0])
         for item in detectedObjects[0][1][0]:
             ox1, oy1, ox2, oy2 = int(item[1][0]), int(item[1][1]), int(item[1][2]), int(item[1][3])
             type = item[0]
