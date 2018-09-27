@@ -1,5 +1,4 @@
 import cv2
-import re
 import math
 import numpy as np
 import collections
@@ -7,7 +6,6 @@ import test_frcnn
 import mser
 import findColor
 import pytesseract
-
 
 class LineMerge:
     def get_lines(self, lines_in):
@@ -219,8 +217,7 @@ class Html:
     def __init__(self, image):
         height, width = image.shape[:2]
         self.img = image
-        cv2.imwrite('onlyTextimg.jpg', self.img)
-        self.onlyTextimg = cv2.imread('onlyTextimg.jpg')
+        self.onlyTextimg = self.img.copy()
         self.threshold = int(((height + width) / 2) * 0.03)
         # self.threshold=30
         # print(self.threshold)
@@ -280,10 +277,10 @@ class Html:
 
     def im_trim(self, img, layoutObject):
         offset = 6
-        x1 = layoutObject[2][0] - offset;
-        y1 = layoutObject[2][1] - offset;
-        x2 = layoutObject[2][2] + offset;
-        y2 = layoutObject[2][3] + offset;
+        x1 = layoutObject[1][0] - offset;
+        y1 = layoutObject[1][1] - offset;
+        x2 = layoutObject[1][2] + offset;
+        y2 = layoutObject[1][3] + offset;
         if x1 < 0:
             x1 = 0
         elif y1 < 0:
@@ -294,7 +291,7 @@ class Html:
             y2 = img.shape[0]
         w = x2 - x1;
         h = y2 - y1;
-        if layoutObject[1].lower() != "text":
+        if layoutObject[0].lower() != "text":
             img = cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), -1)
             cv2.imwrite("onlyTextimg.jpg", img)
         x1 = x1 + offset;
@@ -316,6 +313,9 @@ class Html:
                 return result * threshold
 
     def objectAppendStack(self, detectedObjects):
+        for item in detectedObjects[0][1][0]:
+            if item[0].lower() != "text":
+                self.onlyTextimg = self.im_trim(self.onlyTextimg, item)
         layoutObjects = []
         for item in detectedObjects[0][1][0]:
             ox1, oy1, ox2, oy2 = int(item[1][0]), int(item[1][1]), int(item[1][2]), int(item[1][3])
@@ -389,22 +389,14 @@ class Html:
 
         # type이 글씨를 제외한 영역을 추출, 이미지에서 추출한 영역을 지워버린다.
         layoutObjects2.reverse()
-        # for layoutObject in layoutObjects2:
-        #     for i, stackItem in enumerate(self.htmlStack):
-        #         stackTypeAndId = stackItem[0] + str(stackItem[1])
-        #         if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
-        #             if layoutObject[1].lower() != "text":
-        #                 self.onlyTextimg = self.im_trim(self.onlyTextimg, layoutObject)
 
         for layoutObject in layoutObjects2:
             for i, stackItem in enumerate(self.htmlStack):
                 stackTypeAndId = stackItem[0] + str(stackItem[1])
                 if layoutObject[0] == stackTypeAndId and layoutObject[2] != None:
                     # print(layoutObject)
-                    if layoutObject[1].lower() != "text":
-                        self.onlyTextimg = self.im_trim(self.onlyTextimg, layoutObject)
-                    # else:
-                    #     continue
+                    if layoutObject[1].lower() == "text":
+                        continue
                     findColorFunctoin = findColor.FindColor()
                     if layoutObject[1].lower() == "button":
                         ##find color
@@ -412,7 +404,7 @@ class Html:
                         height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1] - 30, 25)
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],
                                  layoutObject[2][0]: layoutObject[2][2]]
-                        btntext = cleanText(pytesseract.image_to_string(roiImg, config="--psm 11 --oem 1"))
+                        btntext = mser.cleanText(pytesseract.image_to_string(roiImg, config="--psm 11 --oem 1"))
                         color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
@@ -733,12 +725,6 @@ def roi(img, divList, color3=(255, 255, 255), color1=255):
     cv2.fillPoly(mask, vertices, color)
     roiImg = cv2.bitwise_and(img, mask)
     return roiImg
-
-
-def cleanText(origin_text):
-    text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', origin_text)
-    return text
-
 
 def main(image_src, htmlFileName, cssFileName):
     # declare class
