@@ -243,7 +243,8 @@ def operation():
                 cv2.putText(img, textLabel, textOrg, cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1)
                 # print(textLabel)
                 # print(real_x1, real_y1, real_x2, real_y2)
-                item.append([key, [real_x1, real_y1, real_x2, real_y2]])
+                if (100 * new_probs[jk])>95:
+                    item.append([key, [real_x1, real_y1, real_x2, real_y2]])
         print(all_dets)
         object.append([[idx], [item]])
 
