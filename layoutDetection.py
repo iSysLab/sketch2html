@@ -408,7 +408,7 @@ class Html:
                     findColorFunctoin = findColor.FindColor()
                     if layoutObject[1].lower() == "button":
                         ##find color
-                        width = self.pxMapping(layoutObject[2][2] - layoutObject[2][0] - 10, 100)
+                        width = self.pxMapping(layoutObject[2][2] - layoutObject[2][0] - 30, 100)
                         height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1] - 30, 25)
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],
                                  layoutObject[2][0]: layoutObject[2][2]]
@@ -424,7 +424,7 @@ class Html:
 
                     elif layoutObject[1] == "editText":
                         ##find color
-                        width = self.pxMapping(layoutObject[2][2] - layoutObject[2][0] - 10, 100)
+                        width = self.pxMapping(layoutObject[2][2] - layoutObject[2][0] - 30, 100)
                         height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1] - 30, 25)
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],
                                  layoutObject[2][0]: layoutObject[2][2]]

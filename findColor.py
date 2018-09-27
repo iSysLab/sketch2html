@@ -4,17 +4,17 @@ import operator
 
 class FindColor():
     def __init__(self):
-        self.lower_red = np.array([0, 200, 200]) # red
+        self.lower_red = np.array([0, 50, 50]) # red
         self.upper_red = np.array([10, 255, 255])
 
-        self.lower_blue = np.array([115, 200, 200])  # blue
+        self.lower_blue = np.array([115, 50, 50])  # blue
         self.upper_blue = np.array([125, 255, 255])
 
-        self.lower_yellow = np.array([25, 200, 200])  # yellow
+        self.lower_yellow = np.array([25, 50, 50])  # yellow
         self.upper_yellow = np.array([35, 255, 255])
 
-        self.lower_green = np.array([55, 100, 60])  # green
-        self.upper_green = np.array([65, 255, 135])
+        self.lower_green = np.array([55, 50, 50])  # green
+        self.upper_green = np.array([65, 255, 255])
 
         self.lower_black = np.array([0, 0, 0])  # black
         self.upper_black = np.array([5, 5, 5])
@@ -32,7 +32,7 @@ class FindColor():
         if wedget == "button":
             d = {'btn btn-danger':redValue,'btn btn-primary':blueValue,'btn btn-warning':yellowValue,'btn btn-success':greenValue}
             background_color = max(d.keys(), key=lambda x: d[x])
-            if d[background_color]>100:
+            if d[background_color]>10:
                 return background_color
             else:
                 return "none"
@@ -41,7 +41,7 @@ class FindColor():
             d_ = {'red':redValue,'blue':blueValue,'orange':yellowValue,'#009933':greenValue}
             border_color = max(d.keys(), key=lambda x: d[x])
             focus_color = max(d_.keys(), key=lambda x: d_[x])
-            if d[border_color]>100:
+            if d[border_color]>10:
                 return border_color, focus_color
             else:
                 return "none", "none"
