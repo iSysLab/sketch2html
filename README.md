@@ -61,5 +61,5 @@
 * You need the model's weights file to run
 * To train the model, run
 * $ model model_frcnn
-* [Pre-trained model file](https://goo.gl/J3NMsj) ( > 100MB)
+* [Pre-trained model file](https://drive.google.com/open?id=1aP4nfyW7Xu_XAVJn_JsT6Hpzp9zFTUt4) ( > 100MB)
 
