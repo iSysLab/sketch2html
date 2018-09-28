@@ -1,4 +1,7 @@
 # Sketch2HTML
+* Demonstration video
+>[![sketch2html](http://img.youtube.com/vi/uLR1RNqJ1Mw/0.jpg)](https://youtu.be/At2FMvgjaSc) 
+
 * Demo web application for converting a hand-drawn sketch 2 html code
 * The converting module is now actively being developed.
 
@@ -58,5 +61,5 @@
 * You need the model's weights file to run
 * To train the model, run
 * $ model model_frcnn
-* [Pre-trained model file](https://goo.gl/J3NMsj) ( > 100MB)
+* [Pre-trained model file](https://drive.google.com/open?id=1aP4nfyW7Xu_XAVJn_JsT6Hpzp9zFTUt4) ( > 100MB)
 
