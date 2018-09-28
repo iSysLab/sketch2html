@@ -226,7 +226,7 @@ class Html:
         self.divCssStack = []  # div css
         self.css = None
         self.f = []
-        self.objectNum = {"div": 0, "tebLV": 0, "button": 0, "checkBox": 0, "editText": 0, "radioButton": 0, "text": 0}
+        self.objectNum = {"div": 0, "tebLV": 0, "button": 0, "checkBox": 0, "editText": 0, "radioButton": 0, "text": 0, "ocrtext": 0}
         self.divList = []  # Front div id + size
         self.rectList = []  # Total pre div
 
@@ -317,10 +317,9 @@ class Html:
             if item[0].lower() != "text":
                 self.onlyTextimg = self.im_trim(self.onlyTextimg, item)
         layoutObjects = []
-        textarray = mser.textMser(self.onlyTextimg, "simple")
-        # for text in textarray:
-        #     detectedObjects[0][1][0].append(text)
-        # print("testeee", detectedObjects[0][1][0])
+        textarray = mser.textMser(self.onlyTextimg, "findpos")
+        for text in textarray:
+            detectedObjects[0][1][0].append(text)
         for item in detectedObjects[0][1][0]:
             ox1, oy1, ox2, oy2 = int(item[1][0]), int(item[1][1]), int(item[1][2]), int(item[1][3])
             type = item[0]
@@ -441,13 +440,20 @@ class Html:
                             [{'border': '3px solid ' + focus_color}])
 
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1)
+                    elif layoutObject[1] == "ocrtext":
+                        roiImg = self.img[layoutObject[2][1]: layoutObject[2][3], layoutObject[2][0]: layoutObject[2][2]]
+                        cv2.imwrite("test.jpg", roiImg)
+                        ocrtext = mser.textMser(roiImg, "findword")[0][0]
+                        self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
+                                        [{'margin': '10px'}])
+                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
+                                         None, ocrtext)
                     else:
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'}])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
                                          None)
                     self.objectNum[str(layoutObject[1])] += 1
-
                     break
                 elif layoutObject[0] == stackTypeAndId and layoutObject[2] == None:
                     self.addHtmlList(str(layoutObject[1]), None, None, i + 1, None)
@@ -496,39 +502,46 @@ class Html:
             for teb in range(self.objectNum["tebLV"]):
                 text +="\t"
             text+="<div"
-            text+=" id=\""+type+str(htmlStackItem[1])
+            text+=" id = \""+type+str(htmlStackItem[1])
             text+="\">"+"\n"
         elif (type == "button" and htmlStackItem[2] == None):
             color = htmlStackItem[3]
             btntext = htmlStackItem[4]
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
-            text += "<button type=\"button\" "
+            text += "<button type = \"button\" "
             text += "class = \"" + color + "\""
-            text += " id=\"" + type + str(htmlStackItem[1])+"\""
+            text += " id = \"" + type + str(htmlStackItem[1])+"\""
             text += ">"
             text += btntext
             text += "</button>\n"
         elif (type == "checkBox" and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
-            text += "<input type=\"checkbox\""
-            text += " id=\"" + type + str(htmlStackItem[1]) + "\""
+            text += "<input type = \"checkbox\""
+            text += " id = \"" + type + str(htmlStackItem[1]) + "\""
             text += "/>"
             text += "<label>check</label>\n"
         elif ((type == "editText1" or type == "editText2" or type == "editText") and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
-            text += "<input type=\"text\""
-            text += " id=\"" + type + str(htmlStackItem[1])+"\""
+            text += "<input type = \"text\""
+            text += " id = \"" + type + str(htmlStackItem[1])+"\""
             text += "/>\n"
         elif (type == "radioButton" and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type=\"radio\""
-            text += " id=\"" + type + str(htmlStackItem[1]) + "\""
+            text += " id = \"" + type + str(htmlStackItem[1]) + "\""
             text += "/>"
             text += "<label>radio</label>\n"
+        elif (type == "ocrtext" and htmlStackItem[2] == None):
+            ocrtext = htmlStackItem[4]
+            for teb in range(self.objectNum["tebLV"]):
+                text += "\t"
+            text += "<span>"
+            text += ocrtext
+            text += "</span>\n"
         elif(htmlStackItem[2]==False):
             for teb in range(self.objectNum["tebLV"]):
                 text +="\t"
@@ -716,7 +729,6 @@ class Html:
                 madeRows.append([[tx1, ty1, bx2, by2], gaprow, None])
         self.makeCols(html, madeRows, cols, img, insertL, appendL)
 
-
 def roi(img, divList, color3=(255, 255, 255), color1=255):
     minX, minY, maxX, maxY = divList[1][0], divList[1][1], divList[1][2], divList[1][3]
     vertices = np.array([[(minX, minY), (minX, maxY),
@@ -765,7 +777,9 @@ def main(image_src, htmlFileName, cssFileName):
     # cv2.imshow("roi", roiDiv)
     # img_merged_lines = cv2.resize(img_merged_lines, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
 
-    detectedObjects = test_frcnn.operation()
+    # detectedObjects = test_frcnn.operation()
+    detectedObjects = [[[0], [[['editText', [0, 224, 160, 272]], ['editText', [176, 544, 304, 592]], ['editText', [0, 160, 160, 224]], ['editText', [192, 80, 544, 144]], ['editText', [208, 16, 512, 64]], ['editText', [208, 464, 336, 496]], ['radioButtonV', [208, 192, 288, 304]], ['button', [0, 272, 144, 320]], ['button', [624, 352, 752, 416]], ['button', [352, 448, 480, 496]], ['button', [624, 160, 768, 224]], ['checkBoxV', [192, 320, 288, 432]], ['text', [624, 16, 752, 64]]]]]]
+
     print(detectedObjects)
     html.objectAppendStack(detectedObjects)
 

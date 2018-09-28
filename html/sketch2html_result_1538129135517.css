@@ -172,6 +172,12 @@
 #editText2:hover{
 	border : 3px solid blue;
 }
+#ocrtext0{
+	margin : 10px;
+}
+#ocrtext1{
+	margin : 10px;
+}
 #editText3{
 	margin : 10px;
 	width : 300px;
@@ -198,6 +204,9 @@
 #editText4:hover{
 	border : 3px solid orange;
 }
+#ocrtext2{
+	margin : 10px;
+}
 #editText5{
 	margin : 10px;
 	width : 100px;
@@ -210,4 +219,7 @@
 }
 #editText5:hover{
 	border : 3px solid #009933;
+}
+#ocrtext3{
+	margin : 10px;
 }
