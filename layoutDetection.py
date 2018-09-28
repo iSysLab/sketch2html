@@ -445,7 +445,10 @@ class Html:
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1)
                     elif layoutObject[1] == "ocrtext":
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3], layoutObject[2][0]: layoutObject[2][2]]
-                        ocrtext = findText.findText(roiImg)[0][0]
+                        ocrtext = findText.findText(roiImg)
+                        if ocrtext == None:
+                            continue
+                        ocrtext = ocrtext[0][0]
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'}])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,

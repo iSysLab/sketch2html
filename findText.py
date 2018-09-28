@@ -8,7 +8,7 @@ width = 800
 height = 600
 
 def cleanText(origin_text):
-    text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', origin_text)
+    text = re.sub('[,/\^$*\"※~&』\\‘|\(\)\[\]\\`\'…》]', '', origin_text)
     return text
 
 def findText(img, mode = "default", offset = 10):
