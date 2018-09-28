@@ -5,6 +5,7 @@ import collections
 import test_frcnn
 import mser
 import findColor
+import findText
 import pytesseract
 
 class LineMerge:
@@ -317,7 +318,7 @@ class Html:
             if item[0].lower() != "text":
                 self.onlyTextimg = self.im_trim(self.onlyTextimg, item)
         layoutObjects = []
-        textarray = mser.textMser(self.onlyTextimg, "findpos")
+        textarray = findText.findText(self.onlyTextimg, "findpos")
         for text in textarray:
             detectedObjects[0][1][0].append(text)
         for item in detectedObjects[0][1][0]:
@@ -407,7 +408,7 @@ class Html:
                         height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1] - 30, 25)
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],
                                  layoutObject[2][0]: layoutObject[2][2]]
-                        btntext = mser.cleanText(pytesseract.image_to_string(roiImg, config="--psm 11 --oem 1"))
+                        btntext = findText.cleanText(pytesseract.image_to_string(roiImg, config="--psm 11 --oem 1"))
                         color = findColorFunctoin.run(roiImg, "button")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
@@ -443,7 +444,7 @@ class Html:
                     elif layoutObject[1] == "ocrtext":
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3], layoutObject[2][0]: layoutObject[2][2]]
                         cv2.imwrite("test.jpg", roiImg)
-                        ocrtext = mser.textMser(roiImg, "findword")[0][0]
+                        ocrtext = findText.findText(roiImg)[0][0]
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'}])
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1,
@@ -777,8 +778,8 @@ def main(image_src, htmlFileName, cssFileName):
     # cv2.imshow("roi", roiDiv)
     # img_merged_lines = cv2.resize(img_merged_lines, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
 
-    # detectedObjects = test_frcnn.operation()
-    detectedObjects = [[[0], [[['editText', [0, 224, 160, 272]], ['editText', [176, 544, 304, 592]], ['editText', [0, 160, 160, 224]], ['editText', [192, 80, 544, 144]], ['editText', [208, 16, 512, 64]], ['editText', [208, 464, 336, 496]], ['radioButtonV', [208, 192, 288, 304]], ['button', [0, 272, 144, 320]], ['button', [624, 352, 752, 416]], ['button', [352, 448, 480, 496]], ['button', [624, 160, 768, 224]], ['checkBoxV', [192, 320, 288, 432]], ['text', [624, 16, 752, 64]]]]]]
+    detectedObjects = test_frcnn.operation()
+    # detectedObjects = [[[0], [[['editText', [0, 224, 160, 272]], ['editText', [176, 544, 304, 592]], ['editText', [0, 160, 160, 224]], ['editText', [192, 80, 544, 144]], ['editText', [208, 16, 512, 64]], ['editText', [208, 464, 336, 496]], ['radioButtonV', [208, 192, 288, 304]], ['button', [0, 272, 144, 320]], ['button', [624, 352, 752, 416]], ['button', [352, 448, 480, 496]], ['button', [624, 160, 768, 224]], ['checkBoxV', [192, 320, 288, 432]], ['text', [624, 16, 752, 64]]]]]]
 
     print(detectedObjects)
     html.objectAppendStack(detectedObjects)

@@ -103,6 +103,18 @@
 	height : 25px;
 	background-color : btn btn-danger;
 }
+#button2{
+	margin : 10px;
+	width : 100px;
+	height : 25px;
+	background-color : btn btn-danger;
+}
+#button3{
+	margin : 10px;
+	width : 100px;
+	height : 25px;
+	background-color : none;
+}
 #editText0{
 	margin : 10px;
 	width : 100px;
@@ -115,12 +127,6 @@
 }
 #editText0:hover{
 	border : 3px solid red;
-}
-#button2{
-	margin : 10px;
-	width : 100px;
-	height : 25px;
-	background-color : none;
 }
 #checkBox0{
 	margin : 10px;
@@ -140,24 +146,24 @@
 #radioButton2{
 	margin : 10px;
 }
-#button3{
-	margin : 10px;
-	width : 100px;
-	height : 25px;
-	background-color : btn btn-primary;
-}
 #editText1{
 	margin : 10px;
 	width : 100px;
 	height : 25px;
-	border : 3px solid #0099ff;
+	border : 3px solid none;
 	border-radius : 5px;
 }
 #editText1:focus{
-	border : 3px solid blue;
+	border : 3px solid none;
 }
 #editText1:hover{
-	border : 3px solid blue;
+	border : 3px solid none;
+}
+#button4{
+	margin : 10px;
+	width : 100px;
+	height : 25px;
+	background-color : btn btn-primary;
 }
 #editText2{
 	margin : 10px;
@@ -172,24 +178,21 @@
 #editText2:hover{
 	border : 3px solid blue;
 }
-#ocrtext0{
-	margin : 10px;
-}
-#ocrtext1{
-	margin : 10px;
-}
 #editText3{
 	margin : 10px;
-	width : 300px;
+	width : 100px;
 	height : 25px;
-	border : 3px solid #ffeb99;
+	border : 3px solid #0099ff;
 	border-radius : 5px;
 }
 #editText3:focus{
-	border : 3px solid orange;
+	border : 3px solid blue;
 }
 #editText3:hover{
-	border : 3px solid orange;
+	border : 3px solid blue;
+}
+#ocrtext0{
+	margin : 10px;
 }
 #editText4{
 	margin : 10px;
@@ -204,7 +207,7 @@
 #editText4:hover{
 	border : 3px solid orange;
 }
-#ocrtext2{
+#ocrtext1{
 	margin : 10px;
 }
 #editText5{
@@ -219,6 +222,9 @@
 }
 #editText5:hover{
 	border : 3px solid #009933;
+}
+#ocrtext2{
+	margin : 10px;
 }
 #ocrtext3{
 	margin : 10px;
