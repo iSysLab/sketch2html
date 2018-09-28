@@ -3,6 +3,10 @@ import re
 import cv2
 import random
 import numpy as np
+import pytesseract
+
+width = 800
+height = 600
 
 def mser(roi_img):
     ## Read image and change the color space
@@ -37,6 +41,7 @@ def mser(roi_img):
         if item>(avg/2):
             objectCountor+=1
     return objectCountor
+
 
 if __name__=='__main__':
     origin = cv2.imread("./html/radioButtonV.jpg")

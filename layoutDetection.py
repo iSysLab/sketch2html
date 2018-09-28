@@ -314,13 +314,15 @@ class Html:
                 return result * threshold
 
     def objectAppendStack(self, detectedObjects):
+        layoutObjects = []
         for item in detectedObjects[0][1][0]:
             if item[0].lower() != "text":
                 self.onlyTextimg = self.im_trim(self.onlyTextimg, item)
-        layoutObjects = []
         textarray = findText.findText(self.onlyTextimg, "findpos")
-        for text in textarray:
-            detectedObjects[0][1][0].append(text)
+        if textarray != None:
+            for text in textarray:
+                if text[0].lower() == "ocrtext":
+                    detectedObjects[0][1][0].append(text)
         for item in detectedObjects[0][1][0]:
             ox1, oy1, ox2, oy2 = int(item[1][0]), int(item[1][1]), int(item[1][2]), int(item[1][3])
             type = item[0]
@@ -443,7 +445,6 @@ class Html:
                         self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1)
                     elif layoutObject[1] == "ocrtext":
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3], layoutObject[2][0]: layoutObject[2][2]]
-                        cv2.imwrite("test.jpg", roiImg)
                         ocrtext = findText.findText(roiImg)[0][0]
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'}])

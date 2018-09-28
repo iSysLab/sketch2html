@@ -146,24 +146,24 @@
 #radioButton2{
 	margin : 10px;
 }
-#editText1{
-	margin : 10px;
-	width : 100px;
-	height : 25px;
-	border : 3px solid none;
-	border-radius : 5px;
-}
-#editText1:focus{
-	border : 3px solid none;
-}
-#editText1:hover{
-	border : 3px solid none;
-}
 #button4{
 	margin : 10px;
 	width : 100px;
 	height : 25px;
 	background-color : btn btn-primary;
+}
+#editText1{
+	margin : 10px;
+	width : 100px;
+	height : 25px;
+	border : 3px solid #0099ff;
+	border-radius : 5px;
+}
+#editText1:focus{
+	border : 3px solid blue;
+}
+#editText1:hover{
+	border : 3px solid blue;
 }
 #editText2{
 	margin : 10px;
@@ -178,25 +178,25 @@
 #editText2:hover{
 	border : 3px solid blue;
 }
-#editText3{
-	margin : 10px;
-	width : 100px;
-	height : 25px;
-	border : 3px solid #0099ff;
-	border-radius : 5px;
-}
-#editText3:focus{
-	border : 3px solid blue;
-}
-#editText3:hover{
-	border : 3px solid blue;
-}
 #ocrtext0{
 	margin : 10px;
 }
-#editText4{
+#editText3{
 	margin : 10px;
 	width : 300px;
+	height : 25px;
+	border : 3px solid #ffeb99;
+	border-radius : 5px;
+}
+#editText3:focus{
+	border : 3px solid orange;
+}
+#editText3:hover{
+	border : 3px solid orange;
+}
+#editText4{
+	margin : 10px;
+	width : 400px;
 	height : 25px;
 	border : 3px solid #ffeb99;
 	border-radius : 5px;

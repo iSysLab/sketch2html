@@ -16,10 +16,20 @@ def findText(img, mode = "default", offset = 10):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #Converting to GrayScale
     text = cleanText(pytesseract.image_to_boxes(gray, config="--psm 11 --oem 1"))
     text = text.split("\n")
+    if text[0] == '':
+        return None
     array = []
     for m in text:
         info = m.split(" ")
         x1, y1, x2, y2 = int(info[1]) - offset, int(height - int(info[4])) - offset, int(info[3]) + offset, int(height - int(info[2])) + offset
+        if x1 < 0:
+            x1 = 0
+        elif y1 < 0:
+            y1 = 0
+        elif x2 > 800:
+            x2 = 800
+        elif y2 > 600:
+            y2 = 600
         info = [info[0], [x1, y1, x2, y2]]
         array.append(info)
     index = 0
