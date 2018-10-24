@@ -426,6 +426,7 @@ class Html:
                         height = self.pxMapping(layoutObject[2][3] - layoutObject[2][1] - 30, 25)
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3],
                                  layoutObject[2][0]: layoutObject[2][2]]
+                        edttext = findText.cleanText(pytesseract.image_to_string(roiImg, config="--psm 11 --oem 1"))
                         border_color, focus_color = findColorFunctoin.run(roiImg, "editText")
                         self.addCssList("#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]),
                                         [{'margin': '10px'},
@@ -442,7 +443,7 @@ class Html:
                             "#" + str(layoutObject[1]) + str(self.objectNum[str(layoutObject[1])]) + ":hover",
                             [{'border': '3px solid ' + focus_color}])
 
-                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1)
+                        self.addHtmlList(str(layoutObject[1]), self.objectNum[str(layoutObject[1])], None, i + 1, None, edttext)
                     elif layoutObject[1] == "ocrtext":
                         roiImg = self.img[layoutObject[2][1]: layoutObject[2][3], layoutObject[2][0]: layoutObject[2][2]]
                         ocrtext = findText.findText(roiImg)
@@ -528,10 +529,13 @@ class Html:
             text += "/>"
             text += "<label>check</label>\n"
         elif ((type == "editText1" or type == "editText2" or type == "editText") and htmlStackItem[2] == None):
+            edttext = htmlStackItem[4]
             for teb in range(self.objectNum["tebLV"]):
                 text += "\t"
             text += "<input type = \"text\""
             text += " id = \"" + type + str(htmlStackItem[1])+"\""
+            text += " value = " + "'" +edttext + "'"
+            text += " onfocus = \"this.value = ''\""
             text += "/>\n"
         elif (type == "radioButton" and htmlStackItem[2] == None):
             for teb in range(self.objectNum["tebLV"]):
